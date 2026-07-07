@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 - 自定义背景+居中动画版
+-- 秋雨脚本 - 完整版(QQ群+背景+动画+ESP+娱乐)
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -29,7 +29,7 @@ local splashImage = Instance.new("ImageLabel")
 splashImage.Size = UDim2.new(0, 150, 0, 150)
 splashImage.Position = UDim2.new(0.5, -75, 0.33, -75)
 splashImage.BackgroundTransparency = 1
-splashImage.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
+splashImage.Image = "rbxassetid://73337518954608"
 splashImage.ScaleType = Enum.ScaleType.Fit
 splashImage.ImageTransparency = 0.35
 splashImage.Parent = SplashScreen
@@ -116,27 +116,17 @@ MainWindow.BorderSizePixel = 0
 MainWindow.Parent = ScreenGui
 Instance.new("UICorner", MainWindow).CornerRadius = UDim.new(0, 12)
 
--- UI背景图片
 local uiBgImage = Instance.new("ImageLabel")
-uiBgImage.Size = UDim2.new(1, 0, 1, 0)
-uiBgImage.Position = UDim2.new(0, 0, 0, 0)
-uiBgImage.BackgroundTransparency = 1
-uiBgImage.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
-uiBgImage.ScaleType = Enum.ScaleType.Stretch
-uiBgImage.ImageTransparency = 0.6
-uiBgImage.ZIndex = -1
-uiBgImage.Parent = MainWindow
+uiBgImage.Size = UDim2.new(1, 0, 1, 0); uiBgImage.Position = UDim2.new(0, 0, 0, 0); uiBgImage.BackgroundTransparency = 1
+uiBgImage.Image = "rbxassetid://73337518954608"; uiBgImage.ScaleType = Enum.ScaleType.Stretch; uiBgImage.ImageTransparency = 0.15
+uiBgImage.ZIndex = -1; uiBgImage.Parent = MainWindow
 Instance.new("UICorner", uiBgImage).CornerRadius = UDim.new(0, 12)
 
 local ms = Instance.new("UIStroke"); ms.Color = Color3.fromRGB(50, 100, 255); ms.Thickness = 1.5; ms.Transparency = 0.3; ms.Parent = MainWindow
 
--- 入场动画
-MainWindow.BackgroundTransparency = 1
-MainWindow.Size = UDim2.new(0, 0, 0, 0)
-MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-uiBgImage.ImageTransparency = 1
+MainWindow.BackgroundTransparency = 1; MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0); uiBgImage.ImageTransparency = 1
 local enterTween = TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.3})
-local enterBgTween = TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.6})
+local enterBgTween = TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15})
 enterTween:Play(); enterBgTween:Play()
 
 local TitleBar = Instance.new("Frame")
@@ -193,6 +183,8 @@ local ESPNameBtn  = CreateButton(ESPContent, 344, 2,  110, 26, "名字: 关", fa
 local ESPHealthBtn= CreateButton(ESPContent, 460, 2,  110, 26, "血量: 关", false)
 local ESPDistBtn  = CreateButton(ESPContent, 576, 2,  110, 26, "距离: 关", false)
 local ESPTraceBtn = CreateButton(ESPContent, 0,   32, 220, 26, "射线: 关", false)
+-- QQ群按钮
+local QQBtn = CreateButton(ESPContent, 0, 62, 220, 26, "QQ群: 1051933529", false)
 
 -- ==================== 功能标签页 ====================
 local FlyBtn    = CreateButton(FuncContent, 0,   2,  110, 26, "飞行", false)
@@ -240,23 +232,12 @@ PlayerList.Size = UDim2.new(1, 0, 0, 188); PlayerList.Position = UDim2.new(0, 0,
 PlayerList.BackgroundTransparency = 0.85; PlayerList.BorderSizePixel = 0; PlayerList.ScrollBarThickness = 3; PlayerList.ScrollBarImageColor3 = Color3.fromRGB(50, 100, 255)
 PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200); PlayerList.Parent = PlayerContent; Instance.new("UICorner", PlayerList).CornerRadius = UDim.new(0, 8)
 
--- 最小化恢复按钮(用图片)
 local RestoreBtn = Instance.new("ImageButton")
-RestoreBtn.Size = UDim2.new(0, 50, 0, 50)
-RestoreBtn.Position = UDim2.new(0.5, -25, 0.5, -25)
-RestoreBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-RestoreBtn.BackgroundTransparency = 1
-RestoreBtn.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
-RestoreBtn.ScaleType = Enum.ScaleType.Stretch
-RestoreBtn.ImageTransparency = 0.3
-RestoreBtn.Visible = false
-RestoreBtn.Parent = ScreenGui
+RestoreBtn.Size = UDim2.new(0, 50, 0, 50); RestoreBtn.Position = UDim2.new(0.5, -25, 0.5, -25); RestoreBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+RestoreBtn.BackgroundTransparency = 1; RestoreBtn.Image = "rbxassetid://73337518954608"; RestoreBtn.ScaleType = Enum.ScaleType.Stretch
+RestoreBtn.ImageTransparency = 0.1; RestoreBtn.Visible = false; RestoreBtn.Parent = ScreenGui
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-local RestoreStroke = Instance.new("UIStroke")
-RestoreStroke.Color = Color3.fromRGB(100, 150, 255)
-RestoreStroke.Thickness = 2
-RestoreStroke.Transparency = 0.3
-RestoreStroke.Parent = RestoreBtn
+local RestoreStroke = Instance.new("UIStroke"); RestoreStroke.Color = Color3.fromRGB(100, 150, 255); RestoreStroke.Thickness = 2; RestoreStroke.Transparency = 0.3; RestoreStroke.Parent = RestoreBtn
 
 -- ==================== 标签切换 ====================
 local currentTab = "ESP"
@@ -276,21 +257,19 @@ FunTab.MouseButton1Click:Connect(function() SwitchTab("Fun") end)
 CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end)
 PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
 
--- ==================== 最小化/恢复 ====================
+-- ==================== 最小化 ====================
 MinBtn.MouseButton1Click:Connect(function()
     State.Minimized = true
     TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
     TweenService:Create(uiBgImage, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
-    task.wait(0.3); MainWindow.Visible = false
-    RestoreBtn.Visible = true; RestoreBtn.Size = UDim2.new(0, 0, 0, 0)
+    task.wait(0.3); MainWindow.Visible = false; RestoreBtn.Visible = true; RestoreBtn.Size = UDim2.new(0, 0, 0, 0)
     TweenService:Create(RestoreBtn, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 50, 0, 50)}):Play()
 end)
-
 RestoreBtn.MouseButton1Click:Connect(function()
-    State.Minimized = false; RestoreBtn.Visible = false
-    MainWindow.Visible = true; MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    State.Minimized = false; RestoreBtn.Visible = false; MainWindow.Visible = true
+    MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
     TweenService:Create(MainWindow, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160)}):Play()
-    TweenService:Create(uiBgImage, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.6}):Play()
+    TweenService:Create(uiBgImage, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15}):Play()
 end)
 
 -- ==================== 关闭 ====================
@@ -303,7 +282,7 @@ local function CloseWithAnim()
 end
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
 
--- ==================== 所有功能函数 ====================
+-- ==================== 功能函数 ====================
 local function StartFlying()
     if State.Flying then return end; State.Flying = true; FlyBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
     local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*50000; bv.Velocity = Vector3.zero; bv.Parent = root; Components.FlyBodyVelocity = bv
@@ -347,7 +326,7 @@ local function StartCircling(target)
         Components.CircleAngle += Components.CircleSpeed * 0.05; local tp = tr.Position
         root.CFrame = CFrame.new(root.Position:Lerp(Vector3.new(tp.X+r*math.cos(Components.CircleAngle), tp.Y+ho, tp.Z+r*math.sin(Components.CircleAngle)), sm)) end) end
 local function StopCircling() State.Circling = false; Components.CircleTarget = nil; CircleBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
-    CircleTargetLabel.Text = "目标: 无 (在玩家列表选择)"; if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end end
+    CircleTargetLabel.Text = "目标: 无"; if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end end
 
 local function ToggleInfJump() State.InfJump = not State.InfJump; JumpBtn.BackgroundColor3 = State.InfJump and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
     if State.InfJump then Components.JumpHeartbeat = RunService.Heartbeat:Connect(function() if not State.InfJump or not hum or not hum.Parent then return end; local s = hum:GetState(); if s == Enum.HumanoidStateType.Freefall or s == Enum.HumanoidStateType.Jumping then hum.Jump = true end end)
@@ -420,6 +399,13 @@ local function ToggleESPDist() if not State.ESP then return end; State.ESPDistan
 local function ToggleESPTrace() if not State.ESP then return end; State.ESPTracers = not State.ESPTracers; ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60); ESPTraceBtn.Text = State.ESPTracers and "射线: 开" or "射线: 关" end
 RunService.RenderStepped:Connect(function() if State.ESP then UpdateESP() end end)
 
+-- QQ群按钮
+QQBtn.MouseButton1Click:Connect(function()
+    if setclipboard then setclipboard("1051933529") end
+    QQBtn.Text = "✅ 已复制!"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
+    task.wait(1.5); QQBtn.Text = "QQ群: 1051933529"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+end)
+
 -- 玩家列表
 local playerListMode = "teleport"; local playerButtons = {}
 local function RefreshPlayerList()
@@ -466,4 +452,4 @@ MakeDraggable(MainWindow, TitleBar); MakeDraggable(RestoreBtn, RestoreBtn)
 
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
 RefreshPlayerList(); Players.PlayerAdded:Connect(RefreshPlayerList); Players.PlayerRemoving:Connect(RefreshPlayerList)
-print("秋雨脚本 自定义背景版 加载完成!")
+print("秋雨脚本 完整版 加载完成!")
