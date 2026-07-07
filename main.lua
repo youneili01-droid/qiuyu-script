@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 v3.0 - 修复ESP按钮 + 预加载画面
+-- 秋雨脚本 v3.0 - ESP修复版 + 预加载
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -26,15 +26,14 @@ SplashBg.BorderSizePixel = 0
 SplashBg.Parent = SplashScreen
 
 local splashImage = Instance.new("ImageLabel")
-splashImage.Size = UDim2.new(0, 200, 0, 200)
-splashImage.Position = UDim2.new(0.5, -100, 0.3, -100)
+splashImage.Size = UDim2.new(0, 180, 0, 180)
+splashImage.Position = UDim2.new(0.5, -90, 0.32, -90)
 splashImage.BackgroundTransparency = 1
 splashImage.Image = "rbxassetid://你的图片ID"
 splashImage.ScaleType = Enum.ScaleType.Fit
-splashImage.ImageTransparency = 0.3
+splashImage.ImageTransparency = 0.35
 splashImage.Parent = SplashScreen
-Instance.new("UICorner", splashImage).CornerRadius = UDim.new(0, 16)
-
+Instance.new("UICorner", splashImage).CornerRadius = UDim.new(0, 14)
 local imgStroke = Instance.new("UIStroke")
 imgStroke.Color = Color3.fromRGB(100, 150, 255)
 imgStroke.Thickness = 2
@@ -42,7 +41,7 @@ imgStroke.Transparency = 0.3
 imgStroke.Parent = splashImage
 
 local particles = {}
-for i = 1, 35 do
+for i = 1, 30 do
     local p = Instance.new("Frame")
     local s = 3 + math.random() * 5
     p.Size = UDim2.new(0, s, 0, s)
@@ -54,20 +53,17 @@ for i = 1, 35 do
     p.Parent = SplashScreen
     Instance.new("UICorner", p).CornerRadius = UDim.new(1, 0)
     local g = Instance.new("UIStroke")
-    g.Color = p.BackgroundColor3
-    g.Thickness = 1
-    g.Transparency = 0.5
-    g.Parent = p
+    g.Color = p.BackgroundColor3; g.Thickness = 1; g.Transparency = 0.5; g.Parent = p
     table.insert(particles, {frame = p, x = math.random(), y = math.random(), sx = (math.random() - 0.5) * 0.002, sy = -0.001 - math.random() * 0.005, alpha = 0.3 + math.random() * 0.4})
 end
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 40)
-titleLabel.Position = UDim2.new(0, 0, 0.58, 0)
+titleLabel.Size = UDim2.new(1, 0, 0, 36)
+titleLabel.Position = UDim2.new(0, 0, 0.6, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.Text = "秋雨脚本"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 34
+titleLabel.TextSize = 30
 titleLabel.Font = Enum.Font.GothamBlack
 titleLabel.TextStrokeTransparency = 0
 titleLabel.TextStrokeColor3 = Color3.fromRGB(50, 100, 255)
@@ -75,8 +71,8 @@ titleLabel.ZIndex = 3
 titleLabel.Parent = SplashScreen
 
 local loadBarBg = Instance.new("Frame")
-loadBarBg.Size = UDim2.new(0, 180, 0, 4)
-loadBarBg.Position = UDim2.new(0.5, -90, 0.68, 0)
+loadBarBg.Size = UDim2.new(0, 160, 0, 4)
+loadBarBg.Position = UDim2.new(0.5, -80, 0.7, 0)
 loadBarBg.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
 loadBarBg.BorderSizePixel = 0
 loadBarBg.Parent = SplashScreen
@@ -89,22 +85,17 @@ loadBar.BorderSizePixel = 0
 loadBar.Parent = loadBarBg
 Instance.new("UICorner", loadBar).CornerRadius = UDim.new(1, 0)
 local lg = Instance.new("UIStroke")
-lg.Color = Color3.fromRGB(150, 200, 255)
-lg.Thickness = 1.5
-lg.Transparency = 0.3
-lg.Parent = loadBar
+lg.Color = Color3.fromRGB(150, 200, 255); lg.Thickness = 1.5; lg.Transparency = 0.3; lg.Parent = loadBar
 
-local totalTime = 0
-local lp = 0
+local totalTime = 0; local lp = 0
 local pc = RunService.RenderStepped:Connect(function(dt)
-    totalTime = totalTime + dt
-    lp = math.min(lp + dt * 0.4, 1)
+    totalTime += dt; lp = math.min(lp + dt * 0.4, 1)
     loadBar.Size = UDim2.new(lp, 0, 1, 0)
     local pulse = 1 + math.sin(totalTime * 2.5) * 0.06
-    splashImage.Size = UDim2.new(0, 200 * pulse, 0, 200 * pulse)
-    splashImage.Position = UDim2.new(0.5, -100 * pulse, 0.3, -100 * pulse)
+    splashImage.Size = UDim2.new(0, 180 * pulse, 0, 180 * pulse)
+    splashImage.Position = UDim2.new(0.5, -90 * pulse, 0.32, -90 * pulse)
     for _, p in pairs(particles) do
-        p.x = p.x + p.sx; p.y = p.y + p.sy
+        p.x += p.sx; p.y += p.sy
         if p.y < -0.1 then p.x = math.random(); p.y = 1.1 end
         p.frame.Position = UDim2.new(p.x, 0, p.y, 0)
         p.frame.BackgroundTransparency = 1 - p.alpha + math.sin(totalTime * 3 + p.x * 10) * 0.2
@@ -113,8 +104,7 @@ local pc = RunService.RenderStepped:Connect(function(dt)
 end)
 
 task.wait(2)
-local ts = TweenService
-local fi = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local ts = TweenService; local fi = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 for _, p in pairs(particles) do ts:Create(p.frame, fi, {BackgroundTransparency = 1}):Play() end
 ts:Create(SplashBg, fi, {BackgroundTransparency = 1}):Play()
 ts:Create(splashImage, fi, {ImageTransparency = 1}):Play()
@@ -139,8 +129,8 @@ local Components = {
     FlyBodyVelocity = nil, FlyConnection = nil, FlyKeyBegan = nil, FlyKeyEnded = nil,
     SpinAngularVelocity = nil, CircleConnection = nil, CircleTarget = nil,
     CircleAngle = 0, CircleSpeed = 2, JumpHeartbeat = nil, NoClipConnection = nil,
-    SelectedCircleTarget = nil, ESPConnections = {},
-    AimbotConnection = nil, HitboxConnection = nil, HitboxParts = {},
+    SelectedCircleTarget = nil, ESPConnections = {}, AimbotConnection = nil,
+    HitboxConnection = nil, HitboxParts = {},
 }
 
 -- ==================== 角色初始化 ====================
@@ -174,169 +164,82 @@ MainWindow.BorderSizePixel = 0
 MainWindow.Parent = ScreenGui
 Instance.new("UICorner", MainWindow).CornerRadius = UDim.new(0, 12)
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(50, 100, 255)
-MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.3
-MainStroke.Parent = MainWindow
+MainStroke.Color = Color3.fromRGB(50, 100, 255); MainStroke.Thickness = 1.5; MainStroke.Transparency = 0.3; MainStroke.Parent = MainWindow
 
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 28)
-TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TitleBar.BackgroundTransparency = 0.9
-TitleBar.BorderSizePixel = 0
-TitleBar.Parent = MainWindow
+TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255); TitleBar.BackgroundTransparency = 0.9; TitleBar.BorderSizePixel = 0; TitleBar.Parent = MainWindow
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(1, -70, 1, 0)
-TitleLabel.Position = UDim2.new(0, 8, 0, 0)
-TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "秋雨脚本"
-TitleLabel.TextColor3 = Color3.fromRGB(80, 150, 255)
-TitleLabel.TextSize = 13
-TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Parent = TitleBar
+TitleLabel.Size = UDim2.new(1, -70, 1, 0); TitleLabel.Position = UDim2.new(0, 8, 0, 0); TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "秋雨脚本"; TitleLabel.TextColor3 = Color3.fromRGB(80, 150, 255); TitleLabel.TextSize = 13
+TitleLabel.Font = Enum.Font.GothamBold; TitleLabel.TextXAlignment = Enum.TextXAlignment.Left; TitleLabel.Parent = TitleBar
 
 local MinBtn = Instance.new("TextButton")
-MinBtn.Size = UDim2.new(0, 22, 0, 22)
-MinBtn.Position = UDim2.new(1, -50, 0, 3)
-MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MinBtn.BackgroundTransparency = 0.7
-MinBtn.Text = "━"
-MinBtn.TextColor3 = Color3.fromRGB(80, 150, 255)
-MinBtn.TextSize = 14
-MinBtn.Font = Enum.Font.GothamBold
-MinBtn.BorderSizePixel = 0
-MinBtn.Parent = TitleBar
+MinBtn.Size = UDim2.new(0, 22, 0, 22); MinBtn.Position = UDim2.new(1, -50, 0, 3)
+MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255); MinBtn.BackgroundTransparency = 0.7
+MinBtn.Text = "━"; MinBtn.TextColor3 = Color3.fromRGB(80, 150, 255); MinBtn.TextSize = 14
+MinBtn.Font = Enum.Font.GothamBold; MinBtn.BorderSizePixel = 0; MinBtn.Parent = TitleBar
 Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0, 6)
 
 local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 22, 0, 22)
-CloseBtn.Position = UDim2.new(1, -26, 0, 3)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-CloseBtn.BackgroundTransparency = 0.5
-CloseBtn.Text = "✕"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextSize = 11
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.BorderSizePixel = 0
-CloseBtn.Parent = TitleBar
+CloseBtn.Size = UDim2.new(0, 22, 0, 22); CloseBtn.Position = UDim2.new(1, -26, 0, 3)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60); CloseBtn.BackgroundTransparency = 0.5
+CloseBtn.Text = "✕"; CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CloseBtn.TextSize = 11
+CloseBtn.Font = Enum.Font.GothamBold; CloseBtn.BorderSizePixel = 0; CloseBtn.Parent = TitleBar
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
 
 local TabContainer = Instance.new("Frame")
-TabContainer.Size = UDim2.new(1, 0, 0, 24)
-TabContainer.Position = UDim2.new(0, 0, 0, 28)
-TabContainer.BackgroundTransparency = 1
-TabContainer.Parent = MainWindow
+TabContainer.Size = UDim2.new(1, 0, 0, 24); TabContainer.Position = UDim2.new(0, 0, 0, 28)
+TabContainer.BackgroundTransparency = 1; TabContainer.Parent = MainWindow
 
-local ESPTab = Instance.new("TextButton")
-ESPTab.Size = UDim2.new(0, 48, 0, 22)
-ESPTab.Position = UDim2.new(0, 2, 0, 1)
+local function CreateTab(name, pos)
+    local tab = Instance.new("TextButton")
+    tab.Size = UDim2.new(0, 48, 0, 22); tab.Position = UDim2.new(0, pos, 0, 1)
+    tab.BackgroundColor3 = Color3.fromRGB(40, 40, 60); tab.BackgroundTransparency = 0.4
+    tab.Text = name; tab.TextColor3 = Color3.fromRGB(200, 200, 220); tab.TextSize = 10
+    tab.Font = Enum.Font.GothamBold; tab.BorderSizePixel = 0; tab.Parent = TabContainer
+    Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 6)
+    return tab
+end
+
+local ESPTab = CreateTab("ESP", 2)
+local FuncTab = CreateTab("功能", 52)
+local CombatTab = CreateTab("战斗", 102)
+local PlayerTab = CreateTab("玩家", 152)
 ESPTab.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-ESPTab.BackgroundTransparency = 0.4
-ESPTab.Text = "ESP"
 ESPTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-ESPTab.TextSize = 10
-ESPTab.Font = Enum.Font.GothamBold
-ESPTab.BorderSizePixel = 0
-ESPTab.Parent = TabContainer
-Instance.new("UICorner", ESPTab).CornerRadius = UDim.new(0, 6)
 
-local FuncTab = Instance.new("TextButton")
-FuncTab.Size = UDim2.new(0, 48, 0, 22)
-FuncTab.Position = UDim2.new(0, 52, 0, 1)
-FuncTab.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-FuncTab.BackgroundTransparency = 0.4
-FuncTab.Text = "功能"
-FuncTab.TextColor3 = Color3.fromRGB(200, 200, 220)
-FuncTab.TextSize = 10
-FuncTab.Font = Enum.Font.GothamBold
-FuncTab.BorderSizePixel = 0
-FuncTab.Parent = TabContainer
-Instance.new("UICorner", FuncTab).CornerRadius = UDim.new(0, 6)
+local function CreateContent()
+    local c = Instance.new("Frame")
+    c.Size = UDim2.new(1, -12, 1, -58); c.Position = UDim2.new(0, 6, 0, 54)
+    c.BackgroundTransparency = 1; c.Visible = false; c.Parent = MainWindow
+    return c
+end
 
-local CombatTab = Instance.new("TextButton")
-CombatTab.Size = UDim2.new(0, 48, 0, 22)
-CombatTab.Position = UDim2.new(0, 102, 0, 1)
-CombatTab.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-CombatTab.BackgroundTransparency = 0.4
-CombatTab.Text = "战斗"
-CombatTab.TextColor3 = Color3.fromRGB(200, 200, 220)
-CombatTab.TextSize = 10
-CombatTab.Font = Enum.Font.GothamBold
-CombatTab.BorderSizePixel = 0
-CombatTab.Parent = TabContainer
-Instance.new("UICorner", CombatTab).CornerRadius = UDim.new(0, 6)
-
-local PlayerTab = Instance.new("TextButton")
-PlayerTab.Size = UDim2.new(0, 48, 0, 22)
-PlayerTab.Position = UDim2.new(0, 152, 0, 1)
-PlayerTab.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-PlayerTab.BackgroundTransparency = 0.4
-PlayerTab.Text = "玩家"
-PlayerTab.TextColor3 = Color3.fromRGB(200, 200, 220)
-PlayerTab.TextSize = 10
-PlayerTab.Font = Enum.Font.GothamBold
-PlayerTab.BorderSizePixel = 0
-PlayerTab.Parent = TabContainer
-Instance.new("UICorner", PlayerTab).CornerRadius = UDim.new(0, 6)
-
-local ESPContent = Instance.new("Frame")
-ESPContent.Size = UDim2.new(1, -12, 1, -58)
-ESPContent.Position = UDim2.new(0, 6, 0, 54)
-ESPContent.BackgroundTransparency = 1
-ESPContent.Visible = true
-ESPContent.Parent = MainWindow
-
-local FuncContent = Instance.new("Frame")
-FuncContent.Size = UDim2.new(1, -12, 1, -58)
-FuncContent.Position = UDim2.new(0, 6, 0, 54)
-FuncContent.BackgroundTransparency = 1
-FuncContent.Visible = false
-FuncContent.Parent = MainWindow
-
-local CombatContent = Instance.new("Frame")
-CombatContent.Size = UDim2.new(1, -12, 1, -58)
-CombatContent.Position = UDim2.new(0, 6, 0, 54)
-CombatContent.BackgroundTransparency = 1
-CombatContent.Visible = false
-CombatContent.Parent = MainWindow
-
-local PlayerContent = Instance.new("Frame")
-PlayerContent.Size = UDim2.new(1, -12, 1, -58)
-PlayerContent.Position = UDim2.new(0, 6, 0, 54)
-PlayerContent.BackgroundTransparency = 1
-PlayerContent.Visible = false
-PlayerContent.Parent = MainWindow
+local ESPContent = CreateContent(); ESPContent.Visible = true
+local FuncContent = CreateContent()
+local CombatContent = CreateContent()
+local PlayerContent = CreateContent()
 
 local function CreateButton(parent, x, y, w, h, text, active)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, w, 0, h)
-    btn.Position = UDim2.new(0, x, 0, y)
+    btn.Size = UDim2.new(0, w, 0, h); btn.Position = UDim2.new(0, x, 0, y)
     btn.BackgroundColor3 = active and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
-    btn.BackgroundTransparency = 0.4
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(200, 220, 255)
-    btn.TextSize = 10
-    btn.Font = Enum.Font.GothamMedium
-    btn.BorderSizePixel = 0
-    btn.Parent = parent
+    btn.BackgroundTransparency = 0.4; btn.Text = text; btn.TextColor3 = Color3.fromRGB(200, 220, 255)
+    btn.TextSize = 10; btn.Font = Enum.Font.GothamMedium; btn.BorderSizePixel = 0; btn.Parent = parent
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(50, 100, 255)
-    stroke.Thickness = 1
-    stroke.Transparency = 0.5
-    stroke.Parent = btn
+    local st = Instance.new("UIStroke"); st.Color = Color3.fromRGB(50, 100, 255); st.Thickness = 1; st.Transparency = 0.5; st.Parent = btn
     return btn
 end
 
--- ==================== ESP标签页按钮 ====================
-local ESPToggle = CreateButton(ESPContent, 0, 2, 186, 28, "ESP总开关", false)
-local ESPBoxBtn = CreateButton(ESPContent, 0, 34, 90, 28, "方框", false)
-local ESPHealthBtn = CreateButton(ESPContent, 96, 34, 90, 28, "血量", false)
-local ESPDistBtn = CreateButton(ESPContent, 0, 66, 90, 28, "距离", false)
-local ESPTraceBtn = CreateButton(ESPContent, 96, 66, 90, 28, "射线", false)
+-- ESP标签页 - 5个按钮
+local ESPToggle = CreateButton(ESPContent, 0, 2, 186, 28, "ESP: 关闭", false)
+local ESPBoxBtn = CreateButton(ESPContent, 0, 34, 90, 28, "方框: 关", false)
+local ESPHealthBtn = CreateButton(ESPContent, 96, 34, 90, 28, "血量: 关", false)
+local ESPDistBtn = CreateButton(ESPContent, 0, 66, 90, 28, "距离: 关", false)
+local ESPTraceBtn = CreateButton(ESPContent, 96, 66, 90, 28, "射线: 关", false)
 
--- ==================== 功能标签页按钮 ====================
+-- 功能标签页
 local FlyBtn = CreateButton(FuncContent, 0, 2, 90, 28, "飞行", false)
 local SpinBtn = CreateButton(FuncContent, 96, 2, 90, 28, "自转", false)
 local CircleBtn = CreateButton(FuncContent, 0, 34, 90, 28, "绕圈", false)
@@ -347,75 +250,47 @@ local StopBtn = CreateButton(FuncContent, 0, 98, 186, 26, "停止全部", false)
 StopBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
 
 local CircleTargetLabel = Instance.new("TextLabel")
-CircleTargetLabel.Size = UDim2.new(1, 0, 0, 16)
-CircleTargetLabel.Position = UDim2.new(0, 0, 0, 132)
-CircleTargetLabel.BackgroundTransparency = 1
-CircleTargetLabel.Text = "绕圈目标: 无"
-CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
-CircleTargetLabel.TextSize = 10
-CircleTargetLabel.Font = Enum.Font.GothamMedium
-CircleTargetLabel.Parent = FuncContent
+CircleTargetLabel.Size = UDim2.new(1, 0, 0, 16); CircleTargetLabel.Position = UDim2.new(0, 0, 0, 132)
+CircleTargetLabel.BackgroundTransparency = 1; CircleTargetLabel.Text = "绕圈目标: 无"
+CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220); CircleTargetLabel.TextSize = 10
+CircleTargetLabel.Font = Enum.Font.GothamMedium; CircleTargetLabel.Parent = FuncContent
 
--- ==================== 战斗标签页按钮 ====================
+-- 战斗标签页
 local AimbotToggle = CreateButton(CombatContent, 0, 2, 90, 28, "自瞄", false)
 local AimbotVisBtn = CreateButton(CombatContent, 96, 2, 90, 28, "可视检查", false)
 local HitboxToggle = CreateButton(CombatContent, 0, 34, 90, 28, "范围伤害", false)
 local HitboxUpBtn = CreateButton(CombatContent, 96, 34, 44, 28, "+", false)
 local HitboxDownBtn = CreateButton(CombatContent, 142, 34, 44, 28, "-", false)
-
 local HitboxSizeLabel = Instance.new("TextLabel")
-HitboxSizeLabel.Size = UDim2.new(1, 0, 0, 18)
-HitboxSizeLabel.Position = UDim2.new(0, 0, 0, 68)
-HitboxSizeLabel.BackgroundTransparency = 1
-HitboxSizeLabel.Text = "范围大小: 5"
-HitboxSizeLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
-HitboxSizeLabel.TextSize = 11
-HitboxSizeLabel.Font = Enum.Font.GothamBold
-HitboxSizeLabel.Parent = CombatContent
+HitboxSizeLabel.Size = UDim2.new(1, 0, 0, 18); HitboxSizeLabel.Position = UDim2.new(0, 0, 0, 68)
+HitboxSizeLabel.BackgroundTransparency = 1; HitboxSizeLabel.Text = "范围大小: 5"
+HitboxSizeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); HitboxSizeLabel.TextSize = 11
+HitboxSizeLabel.Font = Enum.Font.GothamBold; HitboxSizeLabel.Parent = CombatContent
 
--- ==================== 玩家标签页 ====================
+-- 玩家标签页
 local PlayerModeLabel = Instance.new("TextLabel")
-PlayerModeLabel.Size = UDim2.new(1, 0, 0, 18)
-PlayerModeLabel.Position = UDim2.new(0, 0, 0, 2)
-PlayerModeLabel.BackgroundTransparency = 1
-PlayerModeLabel.Text = "当前模式: 传送"
-PlayerModeLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
-PlayerModeLabel.TextSize = 11
-PlayerModeLabel.Font = Enum.Font.GothamBold
-PlayerModeLabel.Parent = PlayerContent
-
+PlayerModeLabel.Size = UDim2.new(1, 0, 0, 18); PlayerModeLabel.Position = UDim2.new(0, 0, 0, 2)
+PlayerModeLabel.BackgroundTransparency = 1; PlayerModeLabel.Text = "模式: 传送"
+PlayerModeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); PlayerModeLabel.TextSize = 11
+PlayerModeLabel.Font = Enum.Font.GothamBold; PlayerModeLabel.Parent = PlayerContent
 local ModeSwitchBtn = CreateButton(PlayerContent, 0, 24, 186, 24, "切换为绕圈模式", false)
 
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, 0, 0, 190)
-PlayerList.Position = UDim2.new(0, 0, 0, 54)
-PlayerList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-PlayerList.BackgroundTransparency = 0.85
-PlayerList.BorderSizePixel = 0
-PlayerList.ScrollBarThickness = 3
-PlayerList.ScrollBarImageColor3 = Color3.fromRGB(50, 100, 255)
-PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200)
+PlayerList.Size = UDim2.new(1, 0, 0, 190); PlayerList.Position = UDim2.new(0, 0, 0, 54)
+PlayerList.BackgroundColor3 = Color3.fromRGB(255, 255, 255); PlayerList.BackgroundTransparency = 0.85
+PlayerList.BorderSizePixel = 0; PlayerList.ScrollBarThickness = 3
+PlayerList.ScrollBarImageColor3 = Color3.fromRGB(50, 100, 255); PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200)
 PlayerList.Parent = PlayerContent
 Instance.new("UICorner", PlayerList).CornerRadius = UDim.new(0, 8)
 
 local RestoreBtn = Instance.new("TextButton")
-RestoreBtn.Size = UDim2.new(0, 44, 0, 44)
-RestoreBtn.Position = UDim2.new(0.02, 0, 0.5, -22)
-RestoreBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-RestoreBtn.BackgroundTransparency = 0.3
-RestoreBtn.Text = "秋雨"
-RestoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-RestoreBtn.TextSize = 11
-RestoreBtn.Font = Enum.Font.GothamBold
-RestoreBtn.BorderSizePixel = 0
-RestoreBtn.Visible = false
-RestoreBtn.Parent = ScreenGui
+RestoreBtn.Size = UDim2.new(0, 44, 0, 44); RestoreBtn.Position = UDim2.new(0.02, 0, 0.5, -22)
+RestoreBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255); RestoreBtn.BackgroundTransparency = 0.3
+RestoreBtn.Text = "秋雨"; RestoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255); RestoreBtn.TextSize = 11
+RestoreBtn.Font = Enum.Font.GothamBold; RestoreBtn.BorderSizePixel = 0; RestoreBtn.Visible = false; RestoreBtn.Parent = ScreenGui
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-local RestoreStroke = Instance.new("UIStroke")
-RestoreStroke.Color = Color3.fromRGB(100, 150, 255)
-RestoreStroke.Thickness = 2
-RestoreStroke.Transparency = 0.3
-RestoreStroke.Parent = RestoreBtn
+Instance.new("UIStroke", RestoreBtn).Color = Color3.fromRGB(100, 150, 255)
+RestoreBtn.UIStroke.Thickness = 2; RestoreBtn.UIStroke.Transparency = 0.3
 
 -- ==================== 标签切换 ====================
 local function SwitchTab(tab)
@@ -427,7 +302,6 @@ local function SwitchTab(tab)
     PlayerTab.BackgroundColor3 = (tab == "Player") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     if tab == "Player" then RefreshPlayerList() end
 end
-
 ESPTab.MouseButton1Click:Connect(function() SwitchTab("ESP") end)
 FuncTab.MouseButton1Click:Connect(function() SwitchTab("Func") end)
 CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end)
@@ -436,7 +310,7 @@ PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
 MinBtn.MouseButton1Click:Connect(function() State.Minimized = true; MainWindow.Visible = false; RestoreBtn.Visible = true end)
 RestoreBtn.MouseButton1Click:Connect(function() State.Minimized = false; MainWindow.Visible = true; RestoreBtn.Visible = false end)
 
--- ==================== 飞行系统 ====================
+-- ==================== 飞行 ====================
 local function StartFlying()
     if State.Flying then return end
     State.Flying = true; FlyBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
@@ -469,7 +343,7 @@ local function StopFlying()
     if Components.FlyKeyEnded then Components.FlyKeyEnded:Disconnect(); Components.FlyKeyEnded = nil end
 end
 
--- ==================== 自转系统 ====================
+-- ==================== 自转 ====================
 local function StartSpinning()
     if State.Spinning then return end
     State.Spinning = true; SpinBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40); hum.AutoRotate = false
@@ -483,12 +357,10 @@ local function StopSpinning()
     hum.AutoRotate = true
 end
 
--- ==================== 绕圈系统 ====================
+-- ==================== 绕圈 ====================
 local function StartCircling(target)
     if State.Circling then StopCircling() end
-    if not target then return end
-    local tc = target.Character; if not tc then return end
-    local tr = tc:FindFirstChild("HumanoidRootPart"); if not tr or not root then return end
+    if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") or not root then return end
     State.Circling = true; Components.CircleTarget = target; Components.CircleAngle = math.random()*math.pi*2
     CircleBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
     local r, ho, sm = 8, 3, 0.5
@@ -507,7 +379,7 @@ local function StopCircling()
     if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end
 end
 
--- ==================== 无限跳跃 ====================
+-- ==================== 无限跳 ====================
 local function ToggleInfJump()
     State.InfJump = not State.InfJump; JumpBtn.BackgroundColor3 = State.InfJump and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
     if State.InfJump then
@@ -627,7 +499,7 @@ local function ToggleHitbox()
     end
 end
 
--- ==================== ESP系统（Drawing.new - 原版正常大小） ====================
+-- ==================== ESP系统（Drawing.new - 5个功能独立） ====================
 local ESPDrawings = {}
 
 local function CreateESP(player)
@@ -680,12 +552,11 @@ local function UpdateESP()
             drawings.Box.Visible = true; drawings.Box.Size = boxSize; drawings.Box.Position = boxPos
             local tc = player.TeamColor and player.TeamColor.Color
             drawings.Box.Color = tc or Color3.fromRGB(255, 255, 255)
-        else
-            drawings.Box.Visible = false
-        end
+        else drawings.Box.Visible = false end
         
-        -- 名字
-        drawings.Name.Visible = true; drawings.Name.Position = Vector2.new(position.X, boxPos.Y - 18); drawings.Name.Text = player.Name
+        -- 名字始终显示（ESP开启时）
+        drawings.Name.Visible = State.ESP
+        drawings.Name.Position = Vector2.new(position.X, boxPos.Y - 18); drawings.Name.Text = player.Name
         
         -- 血量
         if State.ESPHealth then
@@ -695,24 +566,18 @@ local function UpdateESP()
             if hp > 0.6 then drawings.HealthBar.Color = Color3.fromRGB(0, 255, 0)
             elseif hp > 0.3 then drawings.HealthBar.Color = Color3.fromRGB(255, 255, 0)
             else drawings.HealthBar.Color = Color3.fromRGB(255, 0, 0) end
-        else
-            drawings.HealthBg.Visible = false; drawings.HealthBar.Visible = false
-        end
+        else drawings.HealthBg.Visible = false; drawings.HealthBar.Visible = false end
         
         -- 距离
         if State.ESPDistance then
             drawings.Distance.Visible = true; drawings.Distance.Position = Vector2.new(position.X, boxPos.Y + boxSize.Y + 4); drawings.Distance.Text = math.floor(dist) .. "m"
-        else
-            drawings.Distance.Visible = false
-        end
+        else drawings.Distance.Visible = false end
         
         -- 射线
         if State.ESPTracers then
             drawings.Tracer.Visible = true; drawings.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
             drawings.Tracer.To = Vector2.new(position.X, boxPos.Y + boxSize.Y); drawings.Tracer.Color = Color3.fromRGB(255, 255, 255)
-        else
-            drawings.Tracer.Visible = false
-        end
+        else drawings.Tracer.Visible = false end
     end
 end
 
@@ -722,9 +587,11 @@ RunService.RenderStepped:Connect(function()
 end)
 
 local function ToggleESP()
-    State.ESP = not State.ESP; ESPToggle.BackgroundColor3 = State.ESP and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    State.ESP = not State.ESP
+    ESPToggle.BackgroundColor3 = State.ESP and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    ESPToggle.Text = State.ESP and "ESP: 开启" or "ESP: 关闭"
+    
     if State.ESP then
-        State.ESPBox = true; ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
         for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer then CreateESP(pl) end end
         local pa = Players.PlayerAdded:Connect(function(pl) if pl ~= LocalPlayer then task.wait(1); CreateESP(pl) end end)
         table.insert(Components.ESPConnections, pa)
@@ -733,13 +600,39 @@ local function ToggleESP()
         end)
         table.insert(Components.ESPConnections, pr)
     else
-        State.ESPBox = false; State.ESPHealth = false; State.ESPDistance = false; State.ESPTracers = false
-        ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60); ESPHealthBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
-        ESPDistBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60); ESPTraceBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
         for _, drawings in pairs(ESPDrawings) do for _, d in pairs(drawings) do d:Remove() end end
         ESPDrawings = {}
         for _, conn in pairs(Components.ESPConnections) do conn:Disconnect() end; Components.ESPConnections = {}
     end
+end
+
+-- ESP单独按钮
+local function ToggleESPBox()
+    if not State.ESP then return end
+    State.ESPBox = not State.ESPBox
+    ESPBoxBtn.BackgroundColor3 = State.ESPBox and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    ESPBoxBtn.Text = State.ESPBox and "方框: 开" or "方框: 关"
+end
+
+local function ToggleESPHealth()
+    if not State.ESP then return end
+    State.ESPHealth = not State.ESPHealth
+    ESPHealthBtn.BackgroundColor3 = State.ESPHealth and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    ESPHealthBtn.Text = State.ESPHealth and "血量: 开" or "血量: 关"
+end
+
+local function ToggleESPDist()
+    if not State.ESP then return end
+    State.ESPDistance = not State.ESPDistance
+    ESPDistBtn.BackgroundColor3 = State.ESPDistance and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    ESPDistBtn.Text = State.ESPDistance and "距离: 开" or "距离: 关"
+end
+
+local function ToggleESPTrace()
+    if not State.ESP then return end
+    State.ESPTracers = not State.ESPTracers
+    ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+    ESPTraceBtn.Text = State.ESPTracers and "射线: 开" or "射线: 关"
 end
 
 -- ==================== 玩家列表 ====================
@@ -770,10 +663,9 @@ local function RefreshPlayerList()
     end
     PlayerList.CanvasSize = UDim2.new(0, 0, 0, math.max(math.ceil(cnt/2)*30, 40))
 end
-
 ModeSwitchBtn.MouseButton1Click:Connect(function()
-    if playerListMode == "teleport" then playerListMode = "circle"; PlayerModeLabel.Text = "当前模式: 绕圈"; ModeSwitchBtn.Text = "切换为传送模式"
-    else playerListMode = "teleport"; PlayerModeLabel.Text = "当前模式: 传送"; ModeSwitchBtn.Text = "切换为绕圈模式" end
+    if playerListMode == "teleport" then playerListMode = "circle"; PlayerModeLabel.Text = "模式: 绕圈"; ModeSwitchBtn.Text = "切换为传送模式"
+    else playerListMode = "teleport"; PlayerModeLabel.Text = "模式: 传送"; ModeSwitchBtn.Text = "切换为绕圈模式" end
 end)
 
 -- ==================== 按钮绑定 ====================
@@ -785,34 +677,12 @@ NoClipBtn.MouseButton1Click:Connect(ToggleNoClip)
 SpeedBtn.MouseButton1Click:Connect(CycleSpeed)
 StopBtn.MouseButton1Click:Connect(StopAll)
 
--- ESP按钮（修复版 - 独立开关互不干扰）
 ESPToggle.MouseButton1Click:Connect(ToggleESP)
+ESPBoxBtn.MouseButton1Click:Connect(ToggleESPBox)
+ESPHealthBtn.MouseButton1Click:Connect(ToggleESPHealth)
+ESPDistBtn.MouseButton1Click:Connect(ToggleESPDist)
+ESPTraceBtn.MouseButton1Click:Connect(ToggleESPTrace)
 
-ESPBoxBtn.MouseButton1Click:Connect(function()
-    if not State.ESP then return end
-    State.ESPBox = not State.ESPBox
-    ESPBoxBtn.BackgroundColor3 = State.ESPBox and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
-end)
-
-ESPHealthBtn.MouseButton1Click:Connect(function()
-    if not State.ESP then return end
-    State.ESPHealth = not State.ESPHealth
-    ESPHealthBtn.BackgroundColor3 = State.ESPHealth and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
-end)
-
-ESPDistBtn.MouseButton1Click:Connect(function()
-    if not State.ESP then return end
-    State.ESPDistance = not State.ESPDistance
-    ESPDistBtn.BackgroundColor3 = State.ESPDistance and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
-end)
-
-ESPTraceBtn.MouseButton1Click:Connect(function()
-    if not State.ESP then return end
-    State.ESPTracers = not State.ESPTracers
-    ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
-end)
-
--- 战斗按钮
 AimbotToggle.MouseButton1Click:Connect(ToggleAimbot)
 AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
 HitboxToggle.MouseButton1Click:Connect(ToggleHitbox)
@@ -843,4 +713,4 @@ RefreshPlayerList()
 Players.PlayerAdded:Connect(RefreshPlayerList)
 Players.PlayerRemoving:Connect(RefreshPlayerList)
 
-print("秋雨脚本 v3.0 修复版 加载完成!")
+print("秋雨脚本 v3.0 ESP修复版 加载完成!")
