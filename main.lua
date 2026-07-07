@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 - 居中固定 + 过渡动画版
+-- 秋雨脚本 - 自定义背景+居中动画版
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -29,7 +29,7 @@ local splashImage = Instance.new("ImageLabel")
 splashImage.Size = UDim2.new(0, 150, 0, 150)
 splashImage.Position = UDim2.new(0.5, -75, 0.33, -75)
 splashImage.BackgroundTransparency = 1
-splashImage.Image = "rbxassetid://你的图片ID"
+splashImage.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
 splashImage.ScaleType = Enum.ScaleType.Fit
 splashImage.ImageTransparency = 0.35
 splashImage.Parent = SplashScreen
@@ -103,27 +103,41 @@ LocalPlayer.CharacterAdded:Connect(function()
     if State.NoClip then for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end end
 end)
 
--- ==================== UI创建 - 居中固定 ====================
+-- ==================== UI创建 ====================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "QiuYuScript"; ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui"); ScreenGui.ResetOnSpawn = false
 
 local MainWindow = Instance.new("Frame")
 MainWindow.Size = UDim2.new(0, 700, 0, 320)
-MainWindow.Position = UDim2.new(0.5, -350, 0.5, -160)  -- 居中
-MainWindow.AnchorPoint = Vector2.new(0, 0)
+MainWindow.Position = UDim2.new(0.5, -350, 0.5, -160)
 MainWindow.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-MainWindow.BackgroundTransparency = 0.25
+MainWindow.BackgroundTransparency = 0.3
 MainWindow.BorderSizePixel = 0
 MainWindow.Parent = ScreenGui
 Instance.new("UICorner", MainWindow).CornerRadius = UDim.new(0, 12)
+
+-- UI背景图片
+local uiBgImage = Instance.new("ImageLabel")
+uiBgImage.Size = UDim2.new(1, 0, 1, 0)
+uiBgImage.Position = UDim2.new(0, 0, 0, 0)
+uiBgImage.BackgroundTransparency = 1
+uiBgImage.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
+uiBgImage.ScaleType = Enum.ScaleType.Stretch
+uiBgImage.ImageTransparency = 0.6
+uiBgImage.ZIndex = -1
+uiBgImage.Parent = MainWindow
+Instance.new("UICorner", uiBgImage).CornerRadius = UDim.new(0, 12)
+
 local ms = Instance.new("UIStroke"); ms.Color = Color3.fromRGB(50, 100, 255); ms.Thickness = 1.5; ms.Transparency = 0.3; ms.Parent = MainWindow
 
 -- 入场动画
 MainWindow.BackgroundTransparency = 1
 MainWindow.Size = UDim2.new(0, 0, 0, 0)
 MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-local enterTween = TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.25})
-enterTween:Play()
+uiBgImage.ImageTransparency = 1
+local enterTween = TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.3})
+local enterBgTween = TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.6})
+enterTween:Play(); enterBgTween:Play()
 
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 28); TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255); TitleBar.BackgroundTransparency = 0.9; TitleBar.BorderSizePixel = 0; TitleBar.Parent = MainWindow
@@ -226,28 +240,33 @@ PlayerList.Size = UDim2.new(1, 0, 0, 188); PlayerList.Position = UDim2.new(0, 0,
 PlayerList.BackgroundTransparency = 0.85; PlayerList.BorderSizePixel = 0; PlayerList.ScrollBarThickness = 3; PlayerList.ScrollBarImageColor3 = Color3.fromRGB(50, 100, 255)
 PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200); PlayerList.Parent = PlayerContent; Instance.new("UICorner", PlayerList).CornerRadius = UDim.new(0, 8)
 
-local RestoreBtn = Instance.new("TextButton")
-RestoreBtn.Size = UDim2.new(0, 44, 0, 44); RestoreBtn.Position = UDim2.new(0.5, -22, 0.5, -22)
+-- 最小化恢复按钮(用图片)
+local RestoreBtn = Instance.new("ImageButton")
+RestoreBtn.Size = UDim2.new(0, 50, 0, 50)
+RestoreBtn.Position = UDim2.new(0.5, -25, 0.5, -25)
 RestoreBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-RestoreBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255); RestoreBtn.BackgroundTransparency = 0.3
-RestoreBtn.Text = "秋雨"; RestoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255); RestoreBtn.TextSize = 12
-RestoreBtn.Font = Enum.Font.GothamBold; RestoreBtn.BorderSizePixel = 0; RestoreBtn.Visible = false; RestoreBtn.Parent = ScreenGui
+RestoreBtn.BackgroundTransparency = 1
+RestoreBtn.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/03f024a0-e316-4338-acd4-0b912ce71a70.jpg"
+RestoreBtn.ScaleType = Enum.ScaleType.Stretch
+RestoreBtn.ImageTransparency = 0.3
+RestoreBtn.Visible = false
+RestoreBtn.Parent = ScreenGui
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
+local RestoreStroke = Instance.new("UIStroke")
+RestoreStroke.Color = Color3.fromRGB(100, 150, 255)
+RestoreStroke.Thickness = 2
+RestoreStroke.Transparency = 0.3
+RestoreStroke.Parent = RestoreBtn
 
--- ==================== 标签切换(带动画) ====================
+-- ==================== 标签切换 ====================
 local currentTab = "ESP"
 local function SwitchTab(tab)
     if tab == currentTab then return end; currentTab = tab
     local contents = {ESP = ESPContent, Func = FuncContent, Fun = FunContent, Combat = CombatContent, Player = PlayerContent}
     local tabs = {ESP = ESPTab, Func = FuncTab, Fun = FunTab, Combat = CombatTab, Player = PlayerTab}
     for name, content in pairs(contents) do
-        if name == tab then
-            content.Visible = true
-            content.BackgroundTransparency = 1
-            TweenService:Create(content, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
-        else content.Visible = false end
+        if name == tab then content.Visible = true else content.Visible = false end
         tabs[name].BackgroundColor3 = (name == tab) and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
-        tabs[name].TextColor3 = (name == tab) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 220)
     end
     if tab == "Player" then RefreshPlayerList() end
 end
@@ -257,29 +276,29 @@ FunTab.MouseButton1Click:Connect(function() SwitchTab("Fun") end)
 CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end)
 PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
 
--- ==================== 最小化/恢复(带动画) ====================
+-- ==================== 最小化/恢复 ====================
 MinBtn.MouseButton1Click:Connect(function()
     State.Minimized = true
     TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+    TweenService:Create(uiBgImage, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.3); MainWindow.Visible = false
-    RestoreBtn.Visible = true
-    RestoreBtn.Size = UDim2.new(0, 0, 0, 0)
-    TweenService:Create(RestoreBtn, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 44, 0, 44)}):Play()
+    RestoreBtn.Visible = true; RestoreBtn.Size = UDim2.new(0, 0, 0, 0)
+    TweenService:Create(RestoreBtn, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 50, 0, 50)}):Play()
 end)
 
 RestoreBtn.MouseButton1Click:Connect(function()
     State.Minimized = false; RestoreBtn.Visible = false
-    MainWindow.Visible = true
-    MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    MainWindow.Visible = true; MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
     TweenService:Create(MainWindow, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160)}):Play()
+    TweenService:Create(uiBgImage, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.6}):Play()
 end)
 
--- ==================== 关闭(带动画) ====================
+-- ==================== 关闭 ====================
 local function CloseWithAnim()
     StopAll(); State.ESP = false
     for _, d in pairs(ESPDrawings) do for _, v in pairs(d) do v:Remove() end end; ESPDrawings = {}
-    local closeAnim = TweenService:Create(MainWindow, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1})
-    closeAnim:Play()
+    TweenService:Create(MainWindow, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1}):Play()
+    TweenService:Create(uiBgImage, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency = 1}):Play()
     task.wait(0.25); ScreenGui:Destroy()
 end
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
@@ -447,4 +466,4 @@ MakeDraggable(MainWindow, TitleBar); MakeDraggable(RestoreBtn, RestoreBtn)
 
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
 RefreshPlayerList(); Players.PlayerAdded:Connect(RefreshPlayerList); Players.PlayerRemoving:Connect(RefreshPlayerList)
-print("秋雨脚本 居中动画版 加载完成!")
+print("秋雨脚本 自定义背景版 加载完成!")
