@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 v3.2 - 图片+粒子预加载 + 全功能
+-- 秋雨脚本 v3.3 - 修复ESP+图片预加载
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -19,36 +19,31 @@ SplashScreen.ResetOnSpawn = false
 SplashScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 SplashScreen.DisplayOrder = 999
 
--- 深色背景
 local SplashBg = Instance.new("Frame")
 SplashBg.Size = UDim2.new(1, 0, 1, 0)
 SplashBg.BackgroundColor3 = Color3.fromRGB(5, 5, 20)
 SplashBg.BorderSizePixel = 0
 SplashBg.Parent = SplashScreen
 
--- 背景大图
+-- 背景大图（换成你的Roblox图片ID或Imgur直链）
 local splashImage = Instance.new("ImageLabel")
 splashImage.Size = UDim2.new(0, 220, 0, 220)
 splashImage.Position = UDim2.new(0.5, -110, 0.28, -110)
 splashImage.BackgroundTransparency = 1
-splashImage.Image = "https://raw.githubusercontent.com/youneili01-droid/qiuyu-script/main/splash.png"
+-- ⚠️ 改成你的图片链接！
+splashImage.Image = "rbxassetid://00000000000" -- 替换成你的图片ID
 splashImage.ScaleType = Enum.ScaleType.Fit
 splashImage.ImageTransparency = 0.4
 splashImage.Parent = SplashScreen
 
--- 图片圆角
-local imgCorner = Instance.new("UICorner")
-imgCorner.CornerRadius = UDim.new(0, 20)
-imgCorner.Parent = splashImage
+Instance.new("UICorner", splashImage).CornerRadius = UDim.new(0, 20)
 
--- 图片发光边框
 local imgStroke = Instance.new("UIStroke")
 imgStroke.Color = Color3.fromRGB(100, 150, 255)
 imgStroke.Thickness = 2.5
 imgStroke.Transparency = 0.3
 imgStroke.Parent = splashImage
 
--- 图片外层大发光
 local imgOuterGlow = Instance.new("Frame")
 imgOuterGlow.Size = UDim2.new(0, 250, 0, 250)
 imgOuterGlow.Position = UDim2.new(0.5, -125, 0.28, -125)
@@ -58,7 +53,7 @@ imgOuterGlow.BorderSizePixel = 0
 imgOuterGlow.Parent = SplashScreen
 Instance.new("UICorner", imgOuterGlow).CornerRadius = UDim.new(0, 25)
 
--- 粒子效果
+-- 粒子
 local particles = {}
 for i = 1, 40 do
     local particle = Instance.new("Frame")
@@ -70,25 +65,19 @@ for i = 1, 40 do
     particle.BorderSizePixel = 0
     particle.ZIndex = 2
     particle.Parent = SplashScreen
-    
     Instance.new("UICorner", particle).CornerRadius = UDim.new(1, 0)
-    
     local glow = Instance.new("UIStroke")
     glow.Color = particle.BackgroundColor3
     glow.Thickness = 1.5
     glow.Transparency = 0.5
     glow.Parent = particle
-    
     table.insert(particles, {
-        frame = particle,
-        x = math.random(), y = math.random(),
-        speedX = (math.random() - 0.5) * 0.002,
-        speedY = -0.001 - math.random() * 0.005,
-        size = size, alpha = 0.3 + math.random() * 0.4,
+        frame = particle, x = math.random(), y = math.random(),
+        speedX = (math.random() - 0.5) * 0.002, speedY = -0.001 - math.random() * 0.005,
+        alpha = 0.3 + math.random() * 0.4,
     })
 end
 
--- 标题
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 45)
 titleLabel.Position = UDim2.new(0, 0, 0.58, 0)
@@ -102,19 +91,17 @@ titleLabel.TextStrokeColor3 = Color3.fromRGB(50, 100, 255)
 titleLabel.ZIndex = 3
 titleLabel.Parent = SplashScreen
 
--- 副标题
 local subTitle = Instance.new("TextLabel")
 subTitle.Size = UDim2.new(1, 0, 0, 22)
 subTitle.Position = UDim2.new(0, 0, 0.65, 0)
 subTitle.BackgroundTransparency = 1
-subTitle.Text = "v3.2 · 云端进化"
+subTitle.Text = "v3.3 · 秋雨出品"
 subTitle.TextColor3 = Color3.fromRGB(150, 180, 255)
 subTitle.TextSize = 15
 subTitle.Font = Enum.Font.GothamMedium
 subTitle.ZIndex = 3
 subTitle.Parent = SplashScreen
 
--- 加载条背景
 local loadBarBg = Instance.new("Frame")
 loadBarBg.Size = UDim2.new(0, 200, 0, 5)
 loadBarBg.Position = UDim2.new(0.5, -100, 0.72, 0)
@@ -123,7 +110,6 @@ loadBarBg.BorderSizePixel = 0
 loadBarBg.Parent = SplashScreen
 Instance.new("UICorner", loadBarBg).CornerRadius = UDim.new(1, 0)
 
--- 加载条
 local loadBar = Instance.new("Frame")
 loadBar.Size = UDim2.new(0, 0, 1, 0)
 loadBar.BackgroundColor3 = Color3.fromRGB(80, 150, 255)
@@ -137,7 +123,6 @@ loadGlow.Thickness = 2
 loadGlow.Transparency = 0.3
 loadGlow.Parent = loadBar
 
--- 加载文字
 local loadText = Instance.new("TextLabel")
 loadText.Size = UDim2.new(1, 0, 0, 16)
 loadText.Position = UDim2.new(0, 0, 0.75, 0)
@@ -149,18 +134,6 @@ loadText.Font = Enum.Font.GothamMedium
 loadText.ZIndex = 3
 loadText.Parent = SplashScreen
 
--- 版本信息
-local versionText = Instance.new("TextLabel")
-versionText.Size = UDim2.new(1, 0, 0, 14)
-versionText.Position = UDim2.new(0, 0, 0.9, 0)
-versionText.BackgroundTransparency = 1
-versionText.Text = "Made with ❤️"
-versionText.TextColor3 = Color3.fromRGB(100, 120, 180)
-versionText.TextSize = 10
-versionText.Font = Enum.Font.GothamMedium
-versionText.Parent = SplashScreen
-
--- 动画循环
 local totalTime = 0
 local loadProgress = 0
 
@@ -168,22 +141,17 @@ local particleConnection = RunService.RenderStepped:Connect(function(dt)
     totalTime = totalTime + dt
     loadProgress = math.min(loadProgress + dt * 0.4, 1)
     loadBar.Size = UDim2.new(loadProgress, 0, 1, 0)
-    
     if loadProgress < 0.3 then loadText.Text = "正在初始化核心..."
     elseif loadProgress < 0.6 then loadText.Text = "加载功能模块..."
     elseif loadProgress < 0.9 then loadText.Text = "渲染UI界面..."
     else loadText.Text = "启动完成!" end
     
-    -- 图片脉动
     local pulse = 1 + math.sin(totalTime * 2.5) * 0.08
     splashImage.Size = UDim2.new(0, 220 * pulse, 0, 220 * pulse)
     splashImage.Position = UDim2.new(0.5, -110 * pulse, 0.28, -110 * pulse)
     imgOuterGlow.Size = UDim2.new(0, 250 * pulse, 0, 250 * pulse)
     imgOuterGlow.Position = UDim2.new(0.5, -125 * pulse, 0.28, -125 * pulse)
-    imgOuterGlow.BackgroundTransparency = 0.8 - math.sin(totalTime * 2) * 0.1
-    imgStroke.Transparency = 0.3 - math.sin(totalTime * 2) * 0.1
     
-    -- 更新粒子
     for _, p in pairs(particles) do
         p.x = p.x + p.speedX; p.y = p.y + p.speedY
         if p.y < -0.1 then p.x = math.random(); p.y = 1.1 end
@@ -191,18 +159,14 @@ local particleConnection = RunService.RenderStepped:Connect(function(dt)
         p.frame.BackgroundTransparency = 1 - p.alpha + math.sin(totalTime * 3 + p.x * 10) * 0.2
     end
     
-    -- 标题呼吸
     titleLabel.TextTransparency = 0.1 + math.sin(totalTime * 1.5) * 0.1
     loadGlow.Thickness = 2 + math.sin(totalTime * 4) * 1
 end)
 
--- 等待加载完成
 task.wait(2.5)
 
--- 淡出
 local ts = TweenService
 local fi = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
 for _, p in pairs(particles) do ts:Create(p.frame, fi, {BackgroundTransparency = 1}):Play() end
 ts:Create(SplashBg, fi, {BackgroundTransparency = 1}):Play()
 ts:Create(splashImage, fi, {ImageTransparency = 1}):Play()
@@ -212,13 +176,12 @@ ts:Create(subTitle, fi, {TextTransparency = 1}):Play()
 ts:Create(loadBarBg, fi, {BackgroundTransparency = 1}):Play()
 ts:Create(loadBar, fi, {BackgroundTransparency = 1}):Play()
 ts:Create(loadText, fi, {TextTransparency = 1}):Play()
-ts:Create(versionText, fi, {TextTransparency = 1}):Play()
 
 task.wait(0.6)
 particleConnection:Disconnect()
 SplashScreen:Destroy()
 
-print("✅ 秋雨脚本 v3.2 启动完成!")
+print("✅ 秋雨脚本 v3.3 启动完成!")
 
 -- ==================== 状态管理 ====================
 local State = {
@@ -267,7 +230,6 @@ MainWindow.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 MainWindow.BackgroundTransparency = 0.25
 MainWindow.BorderSizePixel = 0
 MainWindow.Parent = ScreenGui
-
 Instance.new("UICorner", MainWindow).CornerRadius = UDim.new(0, 12)
 
 local MainStroke = Instance.new("UIStroke")
@@ -276,7 +238,6 @@ MainStroke.Thickness = 1.5
 MainStroke.Transparency = 0.3
 MainStroke.Parent = MainWindow
 
--- 标题栏
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 28)
 TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -321,7 +282,6 @@ CloseBtn.BorderSizePixel = 0
 CloseBtn.Parent = TitleBar
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
 
--- 标签页
 local TabContainer = Instance.new("Frame")
 TabContainer.Size = UDim2.new(1, 0, 0, 24)
 TabContainer.Position = UDim2.new(0, 0, 0, 28)
@@ -351,7 +311,6 @@ local PlayerTab = CreateTab("玩家", 152)
 ESPTab.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
 ESPTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- 内容区域
 local function CreateContent()
     local content = Instance.new("Frame")
     content.Size = UDim2.new(1, -12, 1, -58)
@@ -368,7 +327,6 @@ local CombatContent = CreateContent()
 local PlayerContent = CreateContent()
 ESPContent.Visible = true
 
--- 按钮创建函数
 local function CreateButton(parent, x, y, w, h, text, active)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, w, 0, h)
@@ -433,7 +391,6 @@ HitboxSizeLabel.Text = "范围大小: 5"
 HitboxSizeLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
 HitboxSizeLabel.TextSize = 11
 HitboxSizeLabel.Font = Enum.Font.GothamBold
-HitboxSizeLabel.TextXAlignment = Enum.TextXAlignment.Left
 HitboxSizeLabel.Parent = CombatContent
 
 -- 玩家标签页
@@ -445,7 +402,6 @@ PlayerModeLabel.Text = "模式: 传送"
 PlayerModeLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
 PlayerModeLabel.TextSize = 11
 PlayerModeLabel.Font = Enum.Font.GothamBold
-PlayerModeLabel.TextXAlignment = Enum.TextXAlignment.Left
 PlayerModeLabel.Parent = PlayerContent
 
 local ModeSwitchBtn = CreateButton(PlayerContent, 0, 24, 186, 24, "切换为绕圈模式", false)
@@ -462,7 +418,6 @@ PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200)
 PlayerList.Parent = PlayerContent
 Instance.new("UICorner", PlayerList).CornerRadius = UDim.new(0, 8)
 
--- 最小化按钮
 local RestoreBtn = Instance.new("TextButton")
 RestoreBtn.Size = UDim2.new(0, 44, 0, 44)
 RestoreBtn.Position = UDim2.new(0.02, 0, 0.5, -22)
@@ -476,30 +431,25 @@ RestoreBtn.BorderSizePixel = 0
 RestoreBtn.Visible = false
 RestoreBtn.Parent = ScreenGui
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
-Instance.new("UIStroke", RestoreBtn).Color = Color3.fromRGB(100, 150, 255)
 
--- ==================== ESP系统（GUI版） ====================
+-- ==================== ESP系统（修复位置偏移） ====================
 local ESPContainer = Instance.new("Frame")
 ESPContainer.Size = UDim2.new(1, 0, 1, 0)
 ESPContainer.BackgroundTransparency = 1
+ESPContainer.ClipsDescendants = false
 ESPContainer.Parent = ScreenGui
-ESPContainer.ZIndex = 5
 
 local ESPObjects = {}
 
 local function CreateESP_GUI(player)
-    local container = Instance.new("Frame")
-    container.Size = UDim2.new(1, 0, 1, 0)
-    container.BackgroundTransparency = 1
-    container.Parent = ESPContainer
-    
     local box = Instance.new("Frame")
-    box.Size = UDim2.new(0, 60, 0, 90)
     box.BackgroundTransparency = 1
-    box.BorderSizePixel = 1
-    box.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    box.BorderSizePixel = 0
+    box.Size = UDim2.new(0, 50, 0, 70)
+    box.Position = UDim2.new(0, 0, 0, 0)
     box.Visible = false
-    box.Parent = container
+    box.Parent = ESPContainer
+    
     local boxStroke = Instance.new("UIStroke")
     boxStroke.Color = Color3.fromRGB(255, 255, 255)
     boxStroke.Thickness = 1.5
@@ -507,7 +457,7 @@ local function CreateESP_GUI(player)
     boxStroke.Parent = box
     
     local nameTag = Instance.new("TextLabel")
-    nameTag.Size = UDim2.new(0, 100, 0, 18)
+    nameTag.Size = UDim2.new(0, 100, 0, 16)
     nameTag.BackgroundTransparency = 1
     nameTag.Text = player.Name
     nameTag.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -515,65 +465,87 @@ local function CreateESP_GUI(player)
     nameTag.Font = Enum.Font.GothamBold
     nameTag.TextStrokeTransparency = 0
     nameTag.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    nameTag.Parent = container
+    nameTag.Visible = false
+    nameTag.Parent = ESPContainer
     
     local healthBg = Instance.new("Frame")
-    healthBg.Size = UDim2.new(0, 3, 0, 90)
+    healthBg.Size = UDim2.new(0, 3, 0, 70)
     healthBg.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     healthBg.BorderSizePixel = 0
     healthBg.Visible = false
-    healthBg.Parent = container
+    healthBg.Parent = ESPContainer
     
     local healthBar = Instance.new("Frame")
-    healthBar.Size = UDim2.new(0, 3, 0, 90)
+    healthBar.Size = UDim2.new(0, 3, 0, 70)
     healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
     healthBar.BorderSizePixel = 0
     healthBar.Visible = false
-    healthBar.Parent = container
+    healthBar.Parent = ESPContainer
     
     local distance = Instance.new("TextLabel")
-    distance.Size = UDim2.new(0, 100, 0, 16)
+    distance.Size = UDim2.new(0, 100, 0, 14)
     distance.BackgroundTransparency = 1
     distance.TextColor3 = Color3.fromRGB(200, 200, 255)
     distance.TextSize = 11
     distance.Font = Enum.Font.GothamMedium
     distance.TextStrokeTransparency = 0
     distance.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    distance.Parent = container
+    distance.Visible = false
+    distance.Parent = ESPContainer
     
     local tracer = Instance.new("Frame")
     tracer.Size = UDim2.new(0, 1, 0, 100)
     tracer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     tracer.BorderSizePixel = 0
+    tracer.AnchorPoint = Vector2.new(0, 0)
     tracer.Visible = false
-    tracer.Parent = container
+    tracer.Parent = ESPContainer
     
     ESPObjects[player] = {
-        container = container, box = box, nameTag = nameTag,
+        box = box, boxStroke = boxStroke, nameTag = nameTag,
         healthBg = healthBg, healthBar = healthBar,
         distance = distance, tracer = tracer,
     }
 end
 
 local function UpdateESP_GUI()
+    local viewportSize = Camera.ViewportSize
+    
     for player, objects in pairs(ESPObjects) do
-        if not player or not player.Parent then objects.container:Destroy(); ESPObjects[player] = nil; continue end
+        if not player or not player.Parent then
+            for _, obj in pairs(objects) do obj:Destroy() end
+            ESPObjects[player] = nil
+            continue
+        end
         
         local character = player.Character
-        if not character or not character:FindFirstChild("HumanoidRootPart") or not character:FindFirstChild("Humanoid") then
+        if not character then
             objects.box.Visible = false; objects.nameTag.Visible = false
             objects.healthBg.Visible = false; objects.healthBar.Visible = false
             objects.distance.Visible = false; objects.tracer.Visible = false
             continue
         end
         
-        if not root then continue end
+        local targetRoot = character:FindFirstChild("HumanoidRootPart")
+        local targetHum = character:FindFirstChild("Humanoid")
+        local head = character:FindFirstChild("Head")
         
-        local targetRoot = character.HumanoidRootPart
-        local targetHum = character.Humanoid
-        local position, onScreen = Camera:WorldToViewportPoint(targetRoot.Position)
+        if not targetRoot or not targetHum or not head or not root then
+            objects.box.Visible = false; objects.nameTag.Visible = false
+            objects.healthBg.Visible = false; objects.healthBar.Visible = false
+            objects.distance.Visible = false; objects.tracer.Visible = false
+            continue
+        end
         
-        if not onScreen then
+        -- 使用头部位置计算（更准确）
+        local headPos = head.Position + Vector3.new(0, 0.5, 0)
+        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+        
+        -- 计算脚部位置
+        local footPos = targetRoot.Position - Vector3.new(0, 3, 0)
+        local footScreen, footOnScreen = Camera:WorldToViewportPoint(footPos)
+        
+        if not onScreen and not footOnScreen then
             objects.box.Visible = false; objects.nameTag.Visible = false
             objects.healthBg.Visible = false; objects.healthBar.Visible = false
             objects.distance.Visible = false; objects.tracer.Visible = false
@@ -581,45 +553,92 @@ local function UpdateESP_GUI()
         end
         
         local dist = (root.Position - targetRoot.Position).Magnitude
-        local scale = math.clamp(1 / (dist * 0.04), 0.4, 1.5)
-        local boxW = 50 * scale; local boxH = 70 * scale
-        local boxX = position.X - boxW/2; local boxY = position.Y - boxH/2
         
+        -- 使用头部到底部的距离计算方框高度
+        local boxHeight = math.abs(screenPos.Y - footScreen.Y)
+        local boxWidth = boxHeight * 0.55
+        
+        -- 限制最小/最大尺寸
+        boxHeight = math.clamp(boxHeight, 30, 150)
+        boxWidth = math.clamp(boxWidth, 20, 80)
+        
+        -- 方框位置 - 顶部对齐头部
+        local boxX = screenPos.X - boxWidth / 2
+        local boxY = screenPos.Y - boxHeight * 0.1
+        
+        -- 确保在屏幕内
+        boxX = math.clamp(boxX, 0, viewportSize.X - boxWidth)
+        boxY = math.clamp(boxY, 0, viewportSize.Y - boxHeight)
+        
+        -- 方框
         if State.ESPBox then
             objects.box.Visible = true
-            objects.box.Size = UDim2.new(0, boxW, 0, boxH)
+            objects.box.Size = UDim2.new(0, boxWidth, 0, boxHeight)
             objects.box.Position = UDim2.new(0, boxX, 0, boxY)
-        else objects.box.Visible = false end
+        else
+            objects.box.Visible = false
+        end
         
+        -- 名字（方框上方）
         objects.nameTag.Visible = true
-        objects.nameTag.Position = UDim2.new(0, position.X - 50, 0, boxY - 20)
+        objects.nameTag.Position = UDim2.new(0, screenPos.X - 50, 0, boxY - 18)
         objects.nameTag.Text = player.Name
         
+        -- 血量
         if State.ESPHealth then
-            local hp = targetHum.Health; local mh = targetHum.MaxHealth
-            local hpp = math.clamp(hp / mh, 0, 1)
-            objects.healthBg.Visible = true; objects.healthBg.Size = UDim2.new(0, 3, 0, boxH)
-            objects.healthBg.Position = UDim2.new(0, boxX - 6, 0, boxY)
-            objects.healthBar.Visible = true; objects.healthBar.Size = UDim2.new(0, 3, 0, boxH * hpp)
-            objects.healthBar.Position = UDim2.new(0, boxX - 6, 0, boxY + boxH * (1 - hpp))
-            objects.healthBar.BackgroundColor3 = hpp > 0.6 and Color3.fromRGB(0,255,0) or (hpp > 0.3 and Color3.fromRGB(255,255,0) or Color3.fromRGB(255,0,0))
-        else objects.healthBg.Visible = false; objects.healthBar.Visible = false end
+            local health = targetHum.Health
+            local maxHealth = targetHum.MaxHealth
+            local healthPercent = math.clamp(health / maxHealth, 0, 1)
+            
+            objects.healthBg.Visible = true
+            objects.healthBg.Size = UDim2.new(0, 3, 0, boxHeight)
+            objects.healthBg.Position = UDim2.new(0, boxX - 5, 0, boxY)
+            
+            objects.healthBar.Visible = true
+            objects.healthBar.Size = UDim2.new(0, 3, 0, boxHeight * healthPercent)
+            objects.healthBar.Position = UDim2.new(0, boxX - 5, 0, boxY + boxHeight * (1 - healthPercent))
+            
+            if healthPercent > 0.6 then
+                objects.healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            elseif healthPercent > 0.3 then
+                objects.healthBar.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+            else
+                objects.healthBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            end
+        else
+            objects.healthBg.Visible = false
+            objects.healthBar.Visible = false
+        end
         
+        -- 距离
         if State.ESPDistance then
             objects.distance.Visible = true
-            objects.distance.Position = UDim2.new(0, position.X - 50, 0, boxY + boxH + 2)
+            objects.distance.Position = UDim2.new(0, screenPos.X - 50, 0, boxY + boxHeight + 2)
             objects.distance.Text = math.floor(dist) .. "m"
-        else objects.distance.Visible = false end
+        else
+            objects.distance.Visible = false
+        end
         
+        -- 射线
         if State.ESPTracers then
             objects.tracer.Visible = true
-            local sc = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-            local dx, dy = position.X - sc.X, (boxY + boxH) - sc.Y
-            local length = math.sqrt(dx*dx + dy*dy)
+            local bottomX = screenPos.X
+            local bottomY = boxY + boxHeight
+            local centerX = viewportSize.X / 2
+            local centerY = viewportSize.Y
+            
+            local dx = bottomX - centerX
+            local dy = bottomY - centerY
+            local length = math.sqrt(dx * dx + dy * dy)
+            local angle = math.deg(math.atan2(dx, dy))
+            
             objects.tracer.Size = UDim2.new(0, 1, 0, length)
-            objects.tracer.Position = UDim2.new(0, sc.X, 0, sc.Y)
-            objects.tracer.Rotation = -math.deg(math.atan2(dx, dy))
-        else objects.tracer.Visible = false end
+            objects.tracer.Position = UDim2.new(0, centerX, 0, centerY)
+            objects.tracer.Rotation = -angle
+            objects.tracer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            objects.tracer.Visible = false
+        end
     end
 end
 
@@ -628,22 +647,45 @@ local function ToggleESP()
     ESPToggle.BackgroundColor3 = State.ESP and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
     
     if State.ESP then
-        State.ESPBox = true; ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
-        for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer then CreateESP_GUI(pl) end end
-        local pa = Players.PlayerAdded:Connect(function(pl) if pl ~= LocalPlayer then task.wait(1); CreateESP_GUI(pl) end end)
-        local pr = Players.PlayerRemoving:Connect(function(pl) if ESPObjects[pl] then ESPObjects[pl].container:Destroy(); ESPObjects[pl] = nil end end)
-        table.insert(Components.ESPConnections, pa); table.insert(Components.ESPConnections, pr)
+        State.ESPBox = true
+        ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
+        
+        for _, pl in pairs(Players:GetPlayers()) do
+            if pl ~= LocalPlayer then CreateESP_GUI(pl) end
+        end
+        
+        local pa = Players.PlayerAdded:Connect(function(pl)
+            if pl ~= LocalPlayer then task.wait(1); CreateESP_GUI(pl) end
+        end)
+        table.insert(Components.ESPConnections, pa)
+        
+        local pr = Players.PlayerRemoving:Connect(function(pl)
+            if ESPObjects[pl] then
+                for _, obj in pairs(ESPObjects[pl]) do obj:Destroy() end
+                ESPObjects[pl] = nil
+            end
+        end)
+        table.insert(Components.ESPConnections, pr)
     else
         State.ESPBox = false; State.ESPHealth = false; State.ESPDistance = false; State.ESPTracers = false
-        ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60); ESPHealthBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
-        ESPDistBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60); ESPTraceBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
-        for _, o in pairs(ESPObjects) do o.container:Destroy() end; ESPObjects = {}
-        for _, c in pairs(Components.ESPConnections) do c:Disconnect() end; Components.ESPConnections = {}
+        ESPBoxBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+        ESPHealthBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+        ESPDistBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+        ESPTraceBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+        
+        for _, objects in pairs(ESPObjects) do
+            for _, obj in pairs(objects) do obj:Destroy() end
+        end
+        ESPObjects = {}
+        
+        for _, conn in pairs(Components.ESPConnections) do
+            conn:Disconnect()
+        end
+        Components.ESPConnections = {}
     end
 end
 
--- ==================== 所有功能 ====================
-
+-- ==================== 功能代码 ====================
 local function StartFlying()
     if State.Flying then return end
     State.Flying = true; FlyBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
@@ -925,7 +967,8 @@ RunService.RenderStepped:Connect(function() if State.ESP then UpdateESP_GUI() en
 -- ==================== 关闭 ====================
 CloseBtn.MouseButton1Click:Connect(function()
     StopAll(); State.ESP = false
-    for _, o in pairs(ESPObjects) do o.container:Destroy() end; ESPObjects = {}
+    for _, objects in pairs(ESPObjects) do for _, obj in pairs(objects) do obj:Destroy() end end
+    ESPObjects = {}
     ScreenGui:Destroy()
 end)
 
@@ -933,4 +976,4 @@ RefreshPlayerList()
 Players.PlayerAdded:Connect(RefreshPlayerList)
 Players.PlayerRemoving:Connect(RefreshPlayerList)
 
-print("✅ 秋雨脚本 v3.2 加载成功!")
+print("✅ 秋雨脚本 v3.3 加载成功!")
