@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 v3.0 - 加预加载画面
+-- 秋雨脚本 v3.0 - 修复ESP按钮 + 预加载画面
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -25,7 +25,6 @@ SplashBg.BackgroundColor3 = Color3.fromRGB(5, 5, 20)
 SplashBg.BorderSizePixel = 0
 SplashBg.Parent = SplashScreen
 
--- 图片（改成你的图片ID）
 local splashImage = Instance.new("ImageLabel")
 splashImage.Size = UDim2.new(0, 200, 0, 200)
 splashImage.Position = UDim2.new(0.5, -100, 0.3, -100)
@@ -42,7 +41,6 @@ imgStroke.Thickness = 2
 imgStroke.Transparency = 0.3
 imgStroke.Parent = splashImage
 
--- 粒子
 local particles = {}
 for i = 1, 35 do
     local p = Instance.new("Frame")
@@ -140,8 +138,8 @@ local State = {
 local Components = {
     FlyBodyVelocity = nil, FlyConnection = nil, FlyKeyBegan = nil, FlyKeyEnded = nil,
     SpinAngularVelocity = nil, CircleConnection = nil, CircleTarget = nil,
-    CircleAngle = 0, CircleSpeed = 2, JumpConnection = nil, JumpHeartbeat = nil,
-    NoClipConnection = nil, SelectedCircleTarget = nil, ESPConnections = {},
+    CircleAngle = 0, CircleSpeed = 2, JumpHeartbeat = nil, NoClipConnection = nil,
+    SelectedCircleTarget = nil, ESPConnections = {},
     AimbotConnection = nil, HitboxConnection = nil, HitboxParts = {},
 }
 
@@ -331,12 +329,14 @@ local function CreateButton(parent, x, y, w, h, text, active)
     return btn
 end
 
+-- ==================== ESP标签页按钮 ====================
 local ESPToggle = CreateButton(ESPContent, 0, 2, 186, 28, "ESP总开关", false)
 local ESPBoxBtn = CreateButton(ESPContent, 0, 34, 90, 28, "方框", false)
 local ESPHealthBtn = CreateButton(ESPContent, 96, 34, 90, 28, "血量", false)
 local ESPDistBtn = CreateButton(ESPContent, 0, 66, 90, 28, "距离", false)
 local ESPTraceBtn = CreateButton(ESPContent, 96, 66, 90, 28, "射线", false)
 
+-- ==================== 功能标签页按钮 ====================
 local FlyBtn = CreateButton(FuncContent, 0, 2, 90, 28, "飞行", false)
 local SpinBtn = CreateButton(FuncContent, 96, 2, 90, 28, "自转", false)
 local CircleBtn = CreateButton(FuncContent, 0, 34, 90, 28, "绕圈", false)
@@ -356,6 +356,7 @@ CircleTargetLabel.TextSize = 10
 CircleTargetLabel.Font = Enum.Font.GothamMedium
 CircleTargetLabel.Parent = FuncContent
 
+-- ==================== 战斗标签页按钮 ====================
 local AimbotToggle = CreateButton(CombatContent, 0, 2, 90, 28, "自瞄", false)
 local AimbotVisBtn = CreateButton(CombatContent, 96, 2, 90, 28, "可视检查", false)
 local HitboxToggle = CreateButton(CombatContent, 0, 34, 90, 28, "范围伤害", false)
@@ -372,6 +373,7 @@ HitboxSizeLabel.TextSize = 11
 HitboxSizeLabel.Font = Enum.Font.GothamBold
 HitboxSizeLabel.Parent = CombatContent
 
+-- ==================== 玩家标签页 ====================
 local PlayerModeLabel = Instance.new("TextLabel")
 PlayerModeLabel.Size = UDim2.new(1, 0, 0, 18)
 PlayerModeLabel.Position = UDim2.new(0, 0, 0, 2)
@@ -415,6 +417,7 @@ RestoreStroke.Thickness = 2
 RestoreStroke.Transparency = 0.3
 RestoreStroke.Parent = RestoreBtn
 
+-- ==================== 标签切换 ====================
 local function SwitchTab(tab)
     ESPContent.Visible = (tab == "ESP"); FuncContent.Visible = (tab == "Func")
     CombatContent.Visible = (tab == "Combat"); PlayerContent.Visible = (tab == "Player")
@@ -433,7 +436,7 @@ PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
 MinBtn.MouseButton1Click:Connect(function() State.Minimized = true; MainWindow.Visible = false; RestoreBtn.Visible = true end)
 RestoreBtn.MouseButton1Click:Connect(function() State.Minimized = false; MainWindow.Visible = true; RestoreBtn.Visible = false end)
 
--- ==================== 飞行 ====================
+-- ==================== 飞行系统 ====================
 local function StartFlying()
     if State.Flying then return end
     State.Flying = true; FlyBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
@@ -466,7 +469,7 @@ local function StopFlying()
     if Components.FlyKeyEnded then Components.FlyKeyEnded:Disconnect(); Components.FlyKeyEnded = nil end
 end
 
--- ==================== 自转 ====================
+-- ==================== 自转系统 ====================
 local function StartSpinning()
     if State.Spinning then return end
     State.Spinning = true; SpinBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40); hum.AutoRotate = false
@@ -480,7 +483,7 @@ local function StopSpinning()
     hum.AutoRotate = true
 end
 
--- ==================== 绕圈 ====================
+-- ==================== 绕圈系统 ====================
 local function StartCircling(target)
     if State.Circling then StopCircling() end
     if not target then return end
@@ -504,7 +507,7 @@ local function StopCircling()
     if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end
 end
 
--- ==================== 无限跳 ====================
+-- ==================== 无限跳跃 ====================
 local function ToggleInfJump()
     State.InfJump = not State.InfJump; JumpBtn.BackgroundColor3 = State.InfJump and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
     if State.InfJump then
@@ -624,7 +627,7 @@ local function ToggleHitbox()
     end
 end
 
--- ==================== ESP系统（Drawing.new版本 - 原版） ====================
+-- ==================== ESP系统（Drawing.new - 原版正常大小） ====================
 local ESPDrawings = {}
 
 local function CreateESP(player)
@@ -671,12 +674,20 @@ local function UpdateESP()
         local scale = math.clamp(1 / (dist * 0.05), 0.5, 2)
         local boxSize = Vector2.new(40 * scale, 60 * scale)
         local boxPos = Vector2.new(position.X - boxSize.X/2, position.Y - boxSize.Y/2)
+        
+        -- 方框
         if State.ESPBox then
             drawings.Box.Visible = true; drawings.Box.Size = boxSize; drawings.Box.Position = boxPos
             local tc = player.TeamColor and player.TeamColor.Color
             drawings.Box.Color = tc or Color3.fromRGB(255, 255, 255)
-        else drawings.Box.Visible = false end
+        else
+            drawings.Box.Visible = false
+        end
+        
+        -- 名字
         drawings.Name.Visible = true; drawings.Name.Position = Vector2.new(position.X, boxPos.Y - 18); drawings.Name.Text = player.Name
+        
+        -- 血量
         if State.ESPHealth then
             local h = targetHum.Health; local mh = targetHum.MaxHealth; local hp = math.clamp(h / mh, 0, 1)
             drawings.HealthBg.Visible = true; drawings.HealthBg.Size = Vector2.new(3, boxSize.Y); drawings.HealthBg.Position = Vector2.new(boxPos.X - 6, boxPos.Y)
@@ -684,14 +695,24 @@ local function UpdateESP()
             if hp > 0.6 then drawings.HealthBar.Color = Color3.fromRGB(0, 255, 0)
             elseif hp > 0.3 then drawings.HealthBar.Color = Color3.fromRGB(255, 255, 0)
             else drawings.HealthBar.Color = Color3.fromRGB(255, 0, 0) end
-        else drawings.HealthBg.Visible = false; drawings.HealthBar.Visible = false end
+        else
+            drawings.HealthBg.Visible = false; drawings.HealthBar.Visible = false
+        end
+        
+        -- 距离
         if State.ESPDistance then
             drawings.Distance.Visible = true; drawings.Distance.Position = Vector2.new(position.X, boxPos.Y + boxSize.Y + 4); drawings.Distance.Text = math.floor(dist) .. "m"
-        else drawings.Distance.Visible = false end
+        else
+            drawings.Distance.Visible = false
+        end
+        
+        -- 射线
         if State.ESPTracers then
             drawings.Tracer.Visible = true; drawings.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
             drawings.Tracer.To = Vector2.new(position.X, boxPos.Y + boxSize.Y); drawings.Tracer.Color = Color3.fromRGB(255, 255, 255)
-        else drawings.Tracer.Visible = false end
+        else
+            drawings.Tracer.Visible = false
+        end
     end
 end
 
@@ -764,12 +785,34 @@ NoClipBtn.MouseButton1Click:Connect(ToggleNoClip)
 SpeedBtn.MouseButton1Click:Connect(CycleSpeed)
 StopBtn.MouseButton1Click:Connect(StopAll)
 
+-- ESP按钮（修复版 - 独立开关互不干扰）
 ESPToggle.MouseButton1Click:Connect(ToggleESP)
-ESPBoxBtn.MouseButton1Click:Connect(function() if not State.ESP then return end; State.ESPBox = not State.ESPBox; ESPBoxBtn.BackgroundColor3 = State.ESPBox and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
-ESPHealthBtn.MouseButton1Click:Connect(function() if not State.ESP then return end; State.ESPHealth = not State.ESPHealth; ESPHealthBtn.BackgroundColor3 = State.ESPHealth and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
-ESPDistBtn.MouseButton1Click:Connect(function() if not State.ESP then return end; State.ESPDistance = not State.ESPDistance; ESPDistBtn.BackgroundColor3 = State.ESPDistance and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
-ESPTraceBtn.MouseButton1Click:Connect(function() if not State.ESP then return end; State.ESPTracers = not State.ESPTracers; ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
 
+ESPBoxBtn.MouseButton1Click:Connect(function()
+    if not State.ESP then return end
+    State.ESPBox = not State.ESPBox
+    ESPBoxBtn.BackgroundColor3 = State.ESPBox and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+end)
+
+ESPHealthBtn.MouseButton1Click:Connect(function()
+    if not State.ESP then return end
+    State.ESPHealth = not State.ESPHealth
+    ESPHealthBtn.BackgroundColor3 = State.ESPHealth and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+end)
+
+ESPDistBtn.MouseButton1Click:Connect(function()
+    if not State.ESP then return end
+    State.ESPDistance = not State.ESPDistance
+    ESPDistBtn.BackgroundColor3 = State.ESPDistance and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+end)
+
+ESPTraceBtn.MouseButton1Click:Connect(function()
+    if not State.ESP then return end
+    State.ESPTracers = not State.ESPTracers
+    ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
+end)
+
+-- 战斗按钮
 AimbotToggle.MouseButton1Click:Connect(ToggleAimbot)
 AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60) end)
 HitboxToggle.MouseButton1Click:Connect(ToggleHitbox)
@@ -800,4 +843,4 @@ RefreshPlayerList()
 Players.PlayerAdded:Connect(RefreshPlayerList)
 Players.PlayerRemoving:Connect(RefreshPlayerList)
 
-print("秋雨脚本 v3.0 + 预加载 加载完成!")
+print("秋雨脚本 v3.0 修复版 加载完成!")
