@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 v3.3 - 修复ESP+图片预加载
+-- 秋雨脚本 v3.4 - ESP方框修复版
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -25,13 +25,11 @@ SplashBg.BackgroundColor3 = Color3.fromRGB(5, 5, 20)
 SplashBg.BorderSizePixel = 0
 SplashBg.Parent = SplashScreen
 
--- 背景大图（换成你的Roblox图片ID或Imgur直链）
 local splashImage = Instance.new("ImageLabel")
 splashImage.Size = UDim2.new(0, 220, 0, 220)
 splashImage.Position = UDim2.new(0.5, -110, 0.28, -110)
 splashImage.BackgroundTransparency = 1
--- ⚠️ 改成你的图片链接！
-splashImage.Image = "rbxassetid://00000000000" -- 替换成你的图片ID
+splashImage.Image = "rbxassetid://00000000000"
 splashImage.ScaleType = Enum.ScaleType.Fit
 splashImage.ImageTransparency = 0.4
 splashImage.Parent = SplashScreen
@@ -53,7 +51,6 @@ imgOuterGlow.BorderSizePixel = 0
 imgOuterGlow.Parent = SplashScreen
 Instance.new("UICorner", imgOuterGlow).CornerRadius = UDim.new(0, 25)
 
--- 粒子
 local particles = {}
 for i = 1, 40 do
     local particle = Instance.new("Frame")
@@ -95,7 +92,7 @@ local subTitle = Instance.new("TextLabel")
 subTitle.Size = UDim2.new(1, 0, 0, 22)
 subTitle.Position = UDim2.new(0, 0, 0.65, 0)
 subTitle.BackgroundTransparency = 1
-subTitle.Text = "v3.3 · 秋雨出品"
+subTitle.Text = "v3.4 · 秋雨出品"
 subTitle.TextColor3 = Color3.fromRGB(150, 180, 255)
 subTitle.TextSize = 15
 subTitle.Font = Enum.Font.GothamMedium
@@ -181,7 +178,7 @@ task.wait(0.6)
 particleConnection:Disconnect()
 SplashScreen:Destroy()
 
-print("✅ 秋雨脚本 v3.3 启动完成!")
+print("秋雨脚本 v3.4 启动完成!")
 
 -- ==================== 状态管理 ====================
 local State = {
@@ -261,7 +258,7 @@ MinBtn.Size = UDim2.new(0, 22, 0, 22)
 MinBtn.Position = UDim2.new(1, -50, 0, 3)
 MinBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MinBtn.BackgroundTransparency = 0.7
-MinBtn.Text = "━"
+MinBtn.Text = "-"
 MinBtn.TextColor3 = Color3.fromRGB(80, 150, 255)
 MinBtn.TextSize = 14
 MinBtn.Font = Enum.Font.GothamBold
@@ -274,7 +271,7 @@ CloseBtn.Size = UDim2.new(0, 22, 0, 22)
 CloseBtn.Position = UDim2.new(1, -26, 0, 3)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
 CloseBtn.BackgroundTransparency = 0.5
-CloseBtn.Text = "✕"
+CloseBtn.Text = "X"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseBtn.TextSize = 11
 CloseBtn.Font = Enum.Font.GothamBold
@@ -373,7 +370,6 @@ CircleTargetLabel.Text = "绕圈目标: 无"
 CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
 CircleTargetLabel.TextSize = 10
 CircleTargetLabel.Font = Enum.Font.GothamMedium
-CircleTargetLabel.TextXAlignment = Enum.TextXAlignment.Left
 CircleTargetLabel.Parent = FuncContent
 
 -- 战斗标签页
@@ -423,7 +419,7 @@ RestoreBtn.Size = UDim2.new(0, 44, 0, 44)
 RestoreBtn.Position = UDim2.new(0.02, 0, 0.5, -22)
 RestoreBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
 RestoreBtn.BackgroundTransparency = 0.3
-RestoreBtn.Text = "秋雨"
+RestoreBtn.Text = "QY"
 RestoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 RestoreBtn.TextSize = 11
 RestoreBtn.Font = Enum.Font.GothamBold
@@ -432,7 +428,7 @@ RestoreBtn.Visible = false
 RestoreBtn.Parent = ScreenGui
 Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
 
--- ==================== ESP系统（修复位置偏移） ====================
+-- ==================== ESP系统（修复版） ====================
 local ESPContainer = Instance.new("Frame")
 ESPContainer.Size = UDim2.new(1, 0, 1, 0)
 ESPContainer.BackgroundTransparency = 1
@@ -502,7 +498,7 @@ local function CreateESP_GUI(player)
     tracer.Parent = ESPContainer
     
     ESPObjects[player] = {
-        box = box, boxStroke = boxStroke, nameTag = nameTag,
+        box = box, nameTag = nameTag,
         healthBg = healthBg, healthBar = healthBar,
         distance = distance, tracer = tracer,
     }
@@ -530,47 +526,34 @@ local function UpdateESP_GUI()
         local targetHum = character:FindFirstChild("Humanoid")
         local head = character:FindFirstChild("Head")
         
-        if not targetRoot or not targetHum or not head or not root then
+        if not targetRoot or not targetHum or not root then
             objects.box.Visible = false; objects.nameTag.Visible = false
             objects.healthBg.Visible = false; objects.healthBar.Visible = false
             objects.distance.Visible = false; objects.tracer.Visible = false
             continue
         end
         
-        -- 使用头部位置计算（更准确）
-        local headPos = head.Position + Vector3.new(0, 0.5, 0)
-        local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+        local rootPos = targetRoot.Position
+        local screenPos, onScreen = Camera:WorldToViewportPoint(rootPos)
         
-        -- 计算脚部位置
-        local footPos = targetRoot.Position - Vector3.new(0, 3, 0)
-        local footScreen, footOnScreen = Camera:WorldToViewportPoint(footPos)
-        
-        if not onScreen and not footOnScreen then
+        if not onScreen then
             objects.box.Visible = false; objects.nameTag.Visible = false
             objects.healthBg.Visible = false; objects.healthBar.Visible = false
             objects.distance.Visible = false; objects.tracer.Visible = false
             continue
         end
         
-        local dist = (root.Position - targetRoot.Position).Magnitude
+        local dist = (root.Position - rootPos).Magnitude
+        local scale = math.clamp(120 / math.max(dist, 1), 0.5, 2.5)
+        local boxHeight = 60 * scale
+        local boxWidth = 40 * scale
         
-        -- 使用头部到底部的距离计算方框高度
-        local boxHeight = math.abs(screenPos.Y - footScreen.Y)
-        local boxWidth = boxHeight * 0.55
-        
-        -- 限制最小/最大尺寸
-        boxHeight = math.clamp(boxHeight, 30, 150)
-        boxWidth = math.clamp(boxWidth, 20, 80)
-        
-        -- 方框位置 - 顶部对齐头部
         local boxX = screenPos.X - boxWidth / 2
-        local boxY = screenPos.Y - boxHeight * 0.1
+        local boxY = screenPos.Y - boxHeight * 0.7
         
-        -- 确保在屏幕内
-        boxX = math.clamp(boxX, 0, viewportSize.X - boxWidth)
-        boxY = math.clamp(boxY, 0, viewportSize.Y - boxHeight)
+        boxX = math.clamp(boxX, -10, viewportSize.X - boxWidth + 10)
+        boxY = math.clamp(boxY, -10, viewportSize.Y - boxHeight + 10)
         
-        -- 方框
         if State.ESPBox then
             objects.box.Visible = true
             objects.box.Size = UDim2.new(0, boxWidth, 0, boxHeight)
@@ -579,12 +562,10 @@ local function UpdateESP_GUI()
             objects.box.Visible = false
         end
         
-        -- 名字（方框上方）
         objects.nameTag.Visible = true
         objects.nameTag.Position = UDim2.new(0, screenPos.X - 50, 0, boxY - 18)
         objects.nameTag.Text = player.Name
         
-        -- 血量
         if State.ESPHealth then
             local health = targetHum.Health
             local maxHealth = targetHum.MaxHealth
@@ -610,7 +591,6 @@ local function UpdateESP_GUI()
             objects.healthBar.Visible = false
         end
         
-        -- 距离
         if State.ESPDistance then
             objects.distance.Visible = true
             objects.distance.Position = UDim2.new(0, screenPos.X - 50, 0, boxY + boxHeight + 2)
@@ -619,7 +599,6 @@ local function UpdateESP_GUI()
             objects.distance.Visible = false
         end
         
-        -- 射线
         if State.ESPTracers then
             objects.tracer.Visible = true
             local bottomX = screenPos.X
@@ -678,9 +657,7 @@ local function ToggleESP()
         end
         ESPObjects = {}
         
-        for _, conn in pairs(Components.ESPConnections) do
-            conn:Disconnect()
-        end
+        for _, conn in pairs(Components.ESPConnections) do conn:Disconnect() end
         Components.ESPConnections = {}
     end
 end
@@ -976,4 +953,4 @@ RefreshPlayerList()
 Players.PlayerAdded:Connect(RefreshPlayerList)
 Players.PlayerRemoving:Connect(RefreshPlayerList)
 
-print("✅ 秋雨脚本 v3.3 加载成功!")
+print("秋雨脚本 v3.4 加载成功!")
