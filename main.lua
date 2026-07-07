@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 - 完整版(QQ群+背景+动画+ESP+娱乐)
+-- 秋雨脚本 - 娱乐修复版
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -125,9 +125,8 @@ Instance.new("UICorner", uiBgImage).CornerRadius = UDim.new(0, 12)
 local ms = Instance.new("UIStroke"); ms.Color = Color3.fromRGB(50, 100, 255); ms.Thickness = 1.5; ms.Transparency = 0.3; ms.Parent = MainWindow
 
 MainWindow.BackgroundTransparency = 1; MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0); uiBgImage.ImageTransparency = 1
-local enterTween = TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.3})
-local enterBgTween = TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15})
-enterTween:Play(); enterBgTween:Play()
+TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.3}):Play()
+TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15}):Play()
 
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 28); TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255); TitleBar.BackgroundTransparency = 0.9; TitleBar.BorderSizePixel = 0; TitleBar.Parent = MainWindow
@@ -183,7 +182,6 @@ local ESPNameBtn  = CreateButton(ESPContent, 344, 2,  110, 26, "名字: 关", fa
 local ESPHealthBtn= CreateButton(ESPContent, 460, 2,  110, 26, "血量: 关", false)
 local ESPDistBtn  = CreateButton(ESPContent, 576, 2,  110, 26, "距离: 关", false)
 local ESPTraceBtn = CreateButton(ESPContent, 0,   32, 220, 26, "射线: 关", false)
--- QQ群按钮
 local QQBtn = CreateButton(ESPContent, 0, 62, 220, 26, "QQ群: 1051933529", false)
 
 -- ==================== 功能标签页 ====================
@@ -243,12 +241,13 @@ local RestoreStroke = Instance.new("UIStroke"); RestoreStroke.Color = Color3.fro
 local currentTab = "ESP"
 local function SwitchTab(tab)
     if tab == currentTab then return end; currentTab = tab
-    local contents = {ESP = ESPContent, Func = FuncContent, Fun = FunContent, Combat = CombatContent, Player = PlayerContent}
-    local tabs = {ESP = ESPTab, Func = FuncTab, Fun = FunTab, Combat = CombatTab, Player = PlayerTab}
-    for name, content in pairs(contents) do
-        if name == tab then content.Visible = true else content.Visible = false end
-        tabs[name].BackgroundColor3 = (name == tab) and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
-    end
+    ESPContent.Visible = (tab == "ESP"); FuncContent.Visible = (tab == "Func"); FunContent.Visible = (tab == "Fun")
+    CombatContent.Visible = (tab == "Combat"); PlayerContent.Visible = (tab == "Player")
+    ESPTab.BackgroundColor3 = (tab == "ESP") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
+    FuncTab.BackgroundColor3 = (tab == "Func") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
+    FunTab.BackgroundColor3 = (tab == "Fun") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
+    CombatTab.BackgroundColor3 = (tab == "Combat") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
+    PlayerTab.BackgroundColor3 = (tab == "Player") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     if tab == "Player" then RefreshPlayerList() end
 end
 ESPTab.MouseButton1Click:Connect(function() SwitchTab("ESP") end)
@@ -326,7 +325,7 @@ local function StartCircling(target)
         Components.CircleAngle += Components.CircleSpeed * 0.05; local tp = tr.Position
         root.CFrame = CFrame.new(root.Position:Lerp(Vector3.new(tp.X+r*math.cos(Components.CircleAngle), tp.Y+ho, tp.Z+r*math.sin(Components.CircleAngle)), sm)) end) end
 local function StopCircling() State.Circling = false; Components.CircleTarget = nil; CircleBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
-    CircleTargetLabel.Text = "目标: 无"; if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end end
+    CircleTargetLabel.Text = "目标: 无 (在玩家列表选择)"; if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end end
 
 local function ToggleInfJump() State.InfJump = not State.InfJump; JumpBtn.BackgroundColor3 = State.InfJump and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
     if State.InfJump then Components.JumpHeartbeat = RunService.Heartbeat:Connect(function() if not State.InfJump or not hum or not hum.Parent then return end; local s = hum:GetState(); if s == Enum.HumanoidStateType.Freefall or s == Enum.HumanoidStateType.Jumping then hum.Jump = true end end)
@@ -342,15 +341,81 @@ local function StopAll() if State.Flying then StopFlying() end; if State.Spinnin
 
 local function TeleportToPlayer(tp) if not tp or not root then return false end; local tc = tp.Character; if tc and tc:FindFirstChild("HumanoidRootPart") then root.CFrame = tc.HumanoidRootPart.CFrame + Vector3.new(0,3,0); return true end; return false end
 
--- 娱乐
+-- ==================== 娱乐功能(修复版) ====================
 local function GetTarget() return Components.SelectedCircleTarget end
-local function TrollHandsUp(target) if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if not hum then return end; hum.PlatformStand = true; local torso = ch:FindFirstChild("Torso") or ch:FindFirstChild("UpperTorso"); if torso and torso:FindFirstChild("Right Shoulder") then torso["Right Shoulder"].CurrentAngle = math.rad(180); torso["Left Shoulder"].CurrentAngle = math.rad(180) end end
-local function TrollSit(target) if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if not hum then return end; hum.Sit = true end
-local function TrollFreeze(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.zero; bv.Parent = hrp; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp; table.insert(Components.TrollConnections, bv); table.insert(Components.TrollConnections, bg) end
-local function TrollFling(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.new(0,500,0); bv.Parent = hrp; table.insert(Components.TrollConnections, bv) end
-local function TrollSpin(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp; task.spawn(function() while bg and bg.Parent do bg.CFrame = bg.CFrame * CFrame.Angles(0, math.rad(10), 0); task.wait() end end); table.insert(Components.TrollConnections, bg) end
-local function TrollFlip(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180), 0, 0); bg.Parent = hrp; table.insert(Components.TrollConnections, bg) end
-local function ClearTroll() for _, obj in pairs(Components.TrollConnections) do if obj and obj.Parent then obj:Destroy() end end; Components.TrollConnections = {}; local target = GetTarget(); if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if hum then hum.PlatformStand = false; hum.Sit = false end end
+
+local function TrollHandsUp(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
+    hum.PlatformStand = true
+    task.wait(0.1)
+    local torso = ch:FindFirstChild("Torso") or ch:FindFirstChild("UpperTorso")
+    if torso then
+        local rs = torso:FindFirstChild("Right Shoulder") or torso:FindFirstChild("RightUpperArm")
+        local ls = torso:FindFirstChild("Left Shoulder") or torso:FindFirstChild("LeftUpperArm")
+        if rs then rs.CurrentAngle = math.rad(180) end
+        if ls then ls.CurrentAngle = math.rad(180) end
+    end
+end
+
+local function TrollSit(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
+    hum.Sit = true
+end
+
+local function TrollFreeze(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    ClearTrollKeepTarget()
+    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.zero; bv.Parent = hrp
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
+    table.insert(Components.TrollConnections, bv); table.insert(Components.TrollConnections, bg)
+end
+
+local function TrollFling(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999
+    bv.Velocity = Vector3.new(math.random(-300,300), 800, math.random(-300,300)); bv.Parent = hrp
+    table.insert(Components.TrollConnections, bv)
+    task.wait(1); if bv and bv.Parent then bv:Destroy() end
+end
+
+local function TrollSpin(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
+    table.insert(Components.TrollConnections, bg)
+    task.spawn(function() while bg and bg.Parent do bg.CFrame = bg.CFrame * CFrame.Angles(0, math.rad(20), 0); task.wait() end end)
+end
+
+local function TrollFlip(target)
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999
+    bg.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180), 0, 0); bg.Parent = hrp
+    table.insert(Components.TrollConnections, bg)
+end
+
+local function ClearTrollKeepTarget()
+    for _, obj in pairs(Components.TrollConnections) do if obj and obj.Parent then obj:Destroy() end end
+    Components.TrollConnections = {}
+end
+
+local function ClearTroll()
+    ClearTrollKeepTarget()
+    local target = GetTarget()
+    if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if hum then hum.PlatformStand = false; hum.Sit = false end
+end
 
 -- 自瞄/范围
 local function GetClosestPlayer() local cl, sd = nil, math.huge
@@ -399,7 +464,7 @@ local function ToggleESPDist() if not State.ESP then return end; State.ESPDistan
 local function ToggleESPTrace() if not State.ESP then return end; State.ESPTracers = not State.ESPTracers; ESPTraceBtn.BackgroundColor3 = State.ESPTracers and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60); ESPTraceBtn.Text = State.ESPTracers and "射线: 开" or "射线: 关" end
 RunService.RenderStepped:Connect(function() if State.ESP then UpdateESP() end end)
 
--- QQ群按钮
+-- QQ群
 QQBtn.MouseButton1Click:Connect(function()
     if setclipboard then setclipboard("1051933529") end
     QQBtn.Text = "✅ 已复制!"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
@@ -434,16 +499,18 @@ ESPToggle.MouseButton1Click:Connect(ToggleESP); ESPBoxBtn.MouseButton1Click:Conn
 ESPHealthBtn.MouseButton1Click:Connect(ToggleESPHealth); ESPDistBtn.MouseButton1Click:Connect(ToggleESPDist); ESPTraceBtn.MouseButton1Click:Connect(ToggleESPTrace)
 
 CircleBtn.MouseButton1Click:Connect(function() if State.Circling then StopCircling() elseif Components.SelectedCircleTarget then StartCircling(Components.SelectedCircleTarget); CircleTargetLabel.Text = "目标: "..Components.SelectedCircleTarget.Name end end)
-HandsUpBtn.MouseButton1Click:Connect(function() TrollHandsUp(GetTarget()) end); SitBtn.MouseButton1Click:Connect(function() TrollSit(GetTarget()) end)
-FreezeBtn.MouseButton1Click:Connect(function() TrollFreeze(GetTarget()) end); FlingBtn.MouseButton1Click:Connect(function() TrollFling(GetTarget()) end)
-SpinTargetBtn.MouseButton1Click:Connect(function() TrollSpin(GetTarget()) end); FlipBtn.MouseButton1Click:Connect(function() TrollFlip(GetTarget()) end)
+HandsUpBtn.MouseButton1Click:Connect(function() TrollHandsUp(GetTarget()) end)
+SitBtn.MouseButton1Click:Connect(function() TrollSit(GetTarget()) end)
+FreezeBtn.MouseButton1Click:Connect(function() TrollFreeze(GetTarget()) end)
+FlingBtn.MouseButton1Click:Connect(function() TrollFling(GetTarget()) end)
+SpinTargetBtn.MouseButton1Click:Connect(function() TrollSpin(GetTarget()) end)
+FlipBtn.MouseButton1Click:Connect(function() TrollFlip(GetTarget()) end)
 UnTrollBtn.MouseButton1Click:Connect(ClearTroll)
 
 AimbotToggle.MouseButton1Click:Connect(ToggleAimbot); AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60) end)
 HitboxToggle.MouseButton1Click:Connect(ToggleHitbox); HitboxUpBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.min(State.HitboxSize+1, 20); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 HitboxDownBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.max(State.HitboxSize-1, 2); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 
--- ==================== 窗口拖动 ====================
 local function MakeDraggable(frame, handle) local dragging, ds, sp = false
     handle.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = true; ds = i.Position; sp = frame.Position end end)
     UserInputService.InputChanged:Connect(function(i) if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then local d = i.Position - ds; frame.Position = UDim2.new(sp.X.Scale, sp.X.Offset+d.X, sp.Y.Scale, sp.Y.Offset+d.Y) end end)
@@ -452,4 +519,4 @@ MakeDraggable(MainWindow, TitleBar); MakeDraggable(RestoreBtn, RestoreBtn)
 
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
 RefreshPlayerList(); Players.PlayerAdded:Connect(RefreshPlayerList); Players.PlayerRemoving:Connect(RefreshPlayerList)
-print("秋雨脚本 完整版 加载完成!")
+print("秋雨脚本 娱乐修复版 加载完成!")
