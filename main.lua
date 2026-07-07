@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 v3.0 - 总开关+5按钮+修复方框
+-- 秋雨脚本 - 娱乐标签页版
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -26,8 +26,8 @@ SplashBg.BorderSizePixel = 0
 SplashBg.Parent = SplashScreen
 
 local splashImage = Instance.new("ImageLabel")
-splashImage.Size = UDim2.new(0, 160, 0, 160)
-splashImage.Position = UDim2.new(0.5, -80, 0.32, -80)
+splashImage.Size = UDim2.new(0, 150, 0, 150)
+splashImage.Position = UDim2.new(0.5, -75, 0.33, -75)
 splashImage.BackgroundTransparency = 1
 splashImage.Image = "rbxassetid://你的图片ID"
 splashImage.ScaleType = Enum.ScaleType.Fit
@@ -46,8 +46,8 @@ for i = 1, 25 do
 end
 
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 30); titleLabel.Position = UDim2.new(0, 0, 0.6, 0); titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "秋雨脚本"; titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255); titleLabel.TextSize = 28
+titleLabel.Size = UDim2.new(1, 0, 0, 28); titleLabel.Position = UDim2.new(0, 0, 0.6, 0); titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "秋雨脚本"; titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255); titleLabel.TextSize = 26
 titleLabel.Font = Enum.Font.GothamBlack; titleLabel.TextStrokeTransparency = 0; titleLabel.TextStrokeColor3 = Color3.fromRGB(50, 100, 255)
 titleLabel.ZIndex = 3; titleLabel.Parent = SplashScreen
 
@@ -63,7 +63,7 @@ local totalTime = 0; local lp = 0
 local pc = RunService.RenderStepped:Connect(function(dt)
     totalTime += dt; lp = math.min(lp + dt * 0.4, 1); loadBar.Size = UDim2.new(lp, 0, 1, 0)
     local pulse = 1 + math.sin(totalTime * 2.5) * 0.05
-    splashImage.Size = UDim2.new(0, 160 * pulse, 0, 160 * pulse); splashImage.Position = UDim2.new(0.5, -80 * pulse, 0.32, -80 * pulse)
+    splashImage.Size = UDim2.new(0, 150 * pulse, 0, 150 * pulse); splashImage.Position = UDim2.new(0.5, -75 * pulse, 0.33, -75 * pulse)
     for _, p in pairs(particles) do p.x += p.sx; p.y += p.sy; if p.y < -0.1 then p.x = math.random(); p.y = 1.1 end; p.frame.Position = UDim2.new(p.x, 0, p.y, 0); p.frame.BackgroundTransparency = 1 - p.alpha + math.sin(totalTime * 3 + p.x * 10) * 0.2 end
     titleLabel.TextTransparency = 0.1 + math.sin(totalTime * 1.5) * 0.1
 end)
@@ -80,10 +80,8 @@ task.wait(0.4); pc:Disconnect(); SplashScreen:Destroy()
 local State = {
     Flying = false, Spinning = false, Circling = false,
     NoClip = false, InfJump = false, Speed = 1,
-    ESP = false, ESPBox = false, ESPName = false, ESPHealth = false,
-    ESPDistance = false, ESPTracers = false,
-    Aimbot = false, AimbotVisible = false,
-    Hitbox = false, HitboxSize = 5, Minimized = false,
+    ESP = false, ESPBox = false, ESPName = false, ESPHealth = false, ESPDistance = false, ESPTracers = false,
+    Aimbot = false, AimbotVisible = false, Hitbox = false, HitboxSize = 5, Minimized = false,
 }
 
 local Components = {
@@ -91,7 +89,7 @@ local Components = {
     SpinAngularVelocity = nil, CircleConnection = nil, CircleTarget = nil,
     CircleAngle = 0, CircleSpeed = 2, JumpHeartbeat = nil, NoClipConnection = nil,
     SelectedCircleTarget = nil, ESPConnections = {}, AimbotConnection = nil,
-    HitboxConnection = nil, HitboxParts = {},
+    HitboxConnection = nil, HitboxParts = {}, TrollConnections = {},
 }
 
 -- ==================== 角色初始化 ====================
@@ -110,7 +108,7 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "QiuYuScript"; ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui"); ScreenGui.ResetOnSpawn = false
 
 local MainWindow = Instance.new("Frame")
-MainWindow.Size = UDim2.new(0, 200, 0, 340); MainWindow.Position = UDim2.new(0.5, -100, 0.5, -170)
+MainWindow.Size = UDim2.new(0, 200, 0, 350); MainWindow.Position = UDim2.new(0.5, -100, 0.5, -175)
 MainWindow.BackgroundColor3 = Color3.fromRGB(15, 15, 25); MainWindow.BackgroundTransparency = 0.25; MainWindow.BorderSizePixel = 0; MainWindow.Parent = ScreenGui
 Instance.new("UICorner", MainWindow).CornerRadius = UDim.new(0, 12)
 local ms = Instance.new("UIStroke"); ms.Color = Color3.fromRGB(50, 100, 255); ms.Thickness = 1.5; ms.Transparency = 0.3; ms.Parent = MainWindow
@@ -131,63 +129,90 @@ CloseBtn.Size = UDim2.new(0, 22, 0, 22); CloseBtn.Position = UDim2.new(1, -26, 0
 CloseBtn.BackgroundTransparency = 0.5; CloseBtn.Text = "✕"; CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CloseBtn.TextSize = 11; CloseBtn.Font = Enum.Font.GothamBold; CloseBtn.BorderSizePixel = 0; CloseBtn.Parent = TitleBar
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
 
+-- 标签页 - ESP/功能/娱乐/战斗/玩家
 local TabContainer = Instance.new("Frame")
 TabContainer.Size = UDim2.new(1, 0, 0, 24); TabContainer.Position = UDim2.new(0, 0, 0, 28); TabContainer.BackgroundTransparency = 1; TabContainer.Parent = MainWindow
 
 local function CreateTab(name, pos)
-    local tab = Instance.new("TextButton"); tab.Size = UDim2.new(0, 48, 0, 22); tab.Position = UDim2.new(0, pos, 0, 1)
+    local tab = Instance.new("TextButton"); tab.Size = UDim2.new(0, 39, 0, 22); tab.Position = UDim2.new(0, pos, 0, 1)
     tab.BackgroundColor3 = Color3.fromRGB(40, 40, 60); tab.BackgroundTransparency = 0.4; tab.Text = name; tab.TextColor3 = Color3.fromRGB(200, 200, 220)
-    tab.TextSize = 10; tab.Font = Enum.Font.GothamBold; tab.BorderSizePixel = 0; tab.Parent = TabContainer
+    tab.TextSize = 9; tab.Font = Enum.Font.GothamBold; tab.BorderSizePixel = 0; tab.Parent = TabContainer
     Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 6); return tab
 end
-local ESPTab = CreateTab("ESP", 2); local FuncTab = CreateTab("功能", 52); local CombatTab = CreateTab("战斗", 102); local PlayerTab = CreateTab("玩家", 152)
+local ESPTab    = CreateTab("ESP", 2)
+local FuncTab   = CreateTab("功能", 43)
+local FunTab    = CreateTab("娱乐", 84)
+local CombatTab = CreateTab("战斗", 125)
+local PlayerTab = CreateTab("玩家", 166)
 ESPTab.BackgroundColor3 = Color3.fromRGB(50, 100, 255); ESPTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 local function CreateContent()
     local c = Instance.new("Frame"); c.Size = UDim2.new(1, -12, 1, -58); c.Position = UDim2.new(0, 6, 0, 54)
     c.BackgroundTransparency = 1; c.Visible = false; c.Parent = MainWindow; return c
 end
-local ESPContent = CreateContent(); ESPContent.Visible = true; local FuncContent = CreateContent(); local CombatContent = CreateContent(); local PlayerContent = CreateContent()
+local ESPContent = CreateContent(); ESPContent.Visible = true; local FuncContent = CreateContent()
+local FunContent = CreateContent(); local CombatContent = CreateContent(); local PlayerContent = CreateContent()
 
 local function CreateButton(parent, x, y, w, h, text, active)
     local btn = Instance.new("TextButton"); btn.Size = UDim2.new(0, w, 0, h); btn.Position = UDim2.new(0, x, 0, y)
     btn.BackgroundColor3 = active and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60); btn.BackgroundTransparency = 0.4
-    btn.Text = text; btn.TextColor3 = Color3.fromRGB(200, 220, 255); btn.TextSize = 10; btn.Font = Enum.Font.GothamMedium; btn.BorderSizePixel = 0; btn.Parent = parent
+    btn.Text = text; btn.TextColor3 = Color3.fromRGB(200, 220, 255); btn.TextSize = 9; btn.Font = Enum.Font.GothamMedium; btn.BorderSizePixel = 0; btn.Parent = parent
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
     local st = Instance.new("UIStroke"); st.Color = Color3.fromRGB(50, 100, 255); st.Thickness = 1; st.Transparency = 0.5; st.Parent = btn; return btn
 end
 
 -- ==================== ESP标签页 ====================
 local ESPToggle   = CreateButton(ESPContent, 0,  2,  186, 28, "ESP: 关闭", false)
-local ESPBoxBtn   = CreateButton(ESPContent, 0,  34, 90,  28, "方框: 关", false)
-local ESPNameBtn  = CreateButton(ESPContent, 96, 34, 90,  28, "名字: 关", false)
-local ESPHealthBtn= CreateButton(ESPContent, 0,  66, 90,  28, "血量: 关", false)
-local ESPDistBtn  = CreateButton(ESPContent, 96, 66, 90,  28, "距离: 关", false)
-local ESPTraceBtn = CreateButton(ESPContent, 0,  98, 90,  28, "射线: 关", false)
+local ESPBoxBtn   = CreateButton(ESPContent, 0,  34, 90,  26, "方框: 关", false)
+local ESPNameBtn  = CreateButton(ESPContent, 96, 34, 90,  26, "名字: 关", false)
+local ESPHealthBtn= CreateButton(ESPContent, 0,  64, 90,  26, "血量: 关", false)
+local ESPDistBtn  = CreateButton(ESPContent, 96, 64, 90,  26, "距离: 关", false)
+local ESPTraceBtn = CreateButton(ESPContent, 0,  94, 186, 26, "射线: 关", false)
 
 -- ==================== 功能标签页 ====================
-local FlyBtn = CreateButton(FuncContent, 0, 2, 90, 28, "飞行", false); local SpinBtn = CreateButton(FuncContent, 96, 2, 90, 28, "自转", false)
-local CircleBtn = CreateButton(FuncContent, 0, 34, 90, 28, "绕圈", false); local JumpBtn = CreateButton(FuncContent, 96, 34, 90, 28, "无限跳", false)
-local NoClipBtn = CreateButton(FuncContent, 0, 66, 90, 28, "穿墙", false); local SpeedBtn = CreateButton(FuncContent, 96, 66, 90, 28, "加速1x", false)
-local StopBtn = CreateButton(FuncContent, 0, 98, 186, 26, "停止全部", false); StopBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+local FlyBtn = CreateButton(FuncContent, 0, 2, 90, 26, "飞行", false)
+local SpinBtn = CreateButton(FuncContent, 96, 2, 90, 26, "自转", false)
+local JumpBtn = CreateButton(FuncContent, 0, 32, 90, 26, "无限跳", false)
+local NoClipBtn = CreateButton(FuncContent, 96, 32, 90, 26, "穿墙", false)
+local SpeedBtn = CreateButton(FuncContent, 0, 62, 90, 26, "加速1x", false)
+local StopBtn = CreateButton(FuncContent, 96, 62, 90, 26, "停止全部", false)
+StopBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+
+-- ==================== 娱乐标签页 ====================
+local CircleBtn   = CreateButton(FunContent, 0,  2,  90, 26, "绕圈", false)
+local HandsUpBtn  = CreateButton(FunContent, 96, 2,  90, 26, "举手", false)
+local SitBtn      = CreateButton(FunContent, 0,  32, 60, 26, "摔倒", false)
+local FreezeBtn   = CreateButton(FunContent, 64, 32, 60, 26, "冻结", false)
+local FlingBtn    = CreateButton(FunContent, 128,32, 58, 26, "弹飞", false)
+local SpinTargetBtn = CreateButton(FunContent, 0,  62, 60, 26, "转圈", false)
+local FlipBtn     = CreateButton(FunContent, 64, 62, 60, 26, "倒立", false)
+local UnTrollBtn  = CreateButton(FunContent, 128,62, 58, 26, "恢复", false)
+
 local CircleTargetLabel = Instance.new("TextLabel")
-CircleTargetLabel.Size = UDim2.new(1, 0, 0, 16); CircleTargetLabel.Position = UDim2.new(0, 0, 0, 132); CircleTargetLabel.BackgroundTransparency = 1
-CircleTargetLabel.Text = "绕圈目标: 无"; CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220); CircleTargetLabel.TextSize = 10; CircleTargetLabel.Font = Enum.Font.GothamMedium; CircleTargetLabel.Parent = FuncContent
+CircleTargetLabel.Size = UDim2.new(1, 0, 0, 14); CircleTargetLabel.Position = UDim2.new(0, 0, 0, 95)
+CircleTargetLabel.BackgroundTransparency = 1; CircleTargetLabel.Text = "目标: 无"
+CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220); CircleTargetLabel.TextSize = 9
+CircleTargetLabel.Font = Enum.Font.GothamMedium; CircleTargetLabel.Parent = FunContent
 
 -- ==================== 战斗标签页 ====================
-local AimbotToggle = CreateButton(CombatContent, 0, 2, 90, 28, "自瞄", false); local AimbotVisBtn = CreateButton(CombatContent, 96, 2, 90, 28, "可视检查", false)
-local HitboxToggle = CreateButton(CombatContent, 0, 34, 90, 28, "范围伤害", false); local HitboxUpBtn = CreateButton(CombatContent, 96, 34, 44, 28, "+", false); local HitboxDownBtn = CreateButton(CombatContent, 142, 34, 44, 28, "-", false)
+local AimbotToggle = CreateButton(CombatContent, 0, 2, 90, 26, "自瞄", false)
+local AimbotVisBtn = CreateButton(CombatContent, 96, 2, 90, 26, "可视检查", false)
+local HitboxToggle = CreateButton(CombatContent, 0, 32, 90, 26, "范围伤害", false)
+local HitboxUpBtn = CreateButton(CombatContent, 96, 32, 44, 26, "+", false)
+local HitboxDownBtn = CreateButton(CombatContent, 142, 32, 44, 26, "-", false)
 local HitboxSizeLabel = Instance.new("TextLabel")
-HitboxSizeLabel.Size = UDim2.new(1, 0, 0, 18); HitboxSizeLabel.Position = UDim2.new(0, 0, 0, 68); HitboxSizeLabel.BackgroundTransparency = 1
-HitboxSizeLabel.Text = "范围大小: 5"; HitboxSizeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); HitboxSizeLabel.TextSize = 11; HitboxSizeLabel.Font = Enum.Font.GothamBold; HitboxSizeLabel.Parent = CombatContent
+HitboxSizeLabel.Size = UDim2.new(1, 0, 0, 16); HitboxSizeLabel.Position = UDim2.new(0, 0, 0, 62); HitboxSizeLabel.BackgroundTransparency = 1
+HitboxSizeLabel.Text = "范围大小: 5"; HitboxSizeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); HitboxSizeLabel.TextSize = 10
+HitboxSizeLabel.Font = Enum.Font.GothamBold; HitboxSizeLabel.Parent = CombatContent
 
 -- ==================== 玩家标签页 ====================
 local PlayerModeLabel = Instance.new("TextLabel")
-PlayerModeLabel.Size = UDim2.new(1, 0, 0, 18); PlayerModeLabel.Position = UDim2.new(0, 0, 0, 2); PlayerModeLabel.BackgroundTransparency = 1
-PlayerModeLabel.Text = "模式: 传送"; PlayerModeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); PlayerModeLabel.TextSize = 11; PlayerModeLabel.Font = Enum.Font.GothamBold; PlayerModeLabel.Parent = PlayerContent
-local ModeSwitchBtn = CreateButton(PlayerContent, 0, 24, 186, 24, "切换为绕圈模式", false)
+PlayerModeLabel.Size = UDim2.new(1, 0, 0, 16); PlayerModeLabel.Position = UDim2.new(0, 0, 0, 2); PlayerModeLabel.BackgroundTransparency = 1
+PlayerModeLabel.Text = "模式: 传送"; PlayerModeLabel.TextColor3 = Color3.fromRGB(150, 180, 220); PlayerModeLabel.TextSize = 10
+PlayerModeLabel.Font = Enum.Font.GothamBold; PlayerModeLabel.Parent = PlayerContent
+local ModeSwitchBtn = CreateButton(PlayerContent, 0, 20, 186, 22, "切换为绕圈模式", false)
 local PlayerList = Instance.new("ScrollingFrame")
-PlayerList.Size = UDim2.new(1, 0, 0, 190); PlayerList.Position = UDim2.new(0, 0, 0, 54); PlayerList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+PlayerList.Size = UDim2.new(1, 0, 0, 200); PlayerList.Position = UDim2.new(0, 0, 0, 46); PlayerList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 PlayerList.BackgroundTransparency = 0.85; PlayerList.BorderSizePixel = 0; PlayerList.ScrollBarThickness = 3; PlayerList.ScrollBarImageColor3 = Color3.fromRGB(50, 100, 255)
 PlayerList.CanvasSize = UDim2.new(0, 0, 0, 200); PlayerList.Parent = PlayerContent; Instance.new("UICorner", PlayerList).CornerRadius = UDim.new(0, 8)
 
@@ -199,15 +224,21 @@ Instance.new("UICorner", RestoreBtn).CornerRadius = UDim.new(1, 0)
 
 -- ==================== 标签切换 ====================
 local function SwitchTab(tab)
-    ESPContent.Visible = (tab == "ESP"); FuncContent.Visible = (tab == "Func"); CombatContent.Visible = (tab == "Combat"); PlayerContent.Visible = (tab == "Player")
+    ESPContent.Visible = (tab == "ESP"); FuncContent.Visible = (tab == "Func"); FunContent.Visible = (tab == "Fun")
+    CombatContent.Visible = (tab == "Combat"); PlayerContent.Visible = (tab == "Player")
     ESPTab.BackgroundColor3 = (tab == "ESP") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     FuncTab.BackgroundColor3 = (tab == "Func") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
+    FunTab.BackgroundColor3 = (tab == "Fun") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     CombatTab.BackgroundColor3 = (tab == "Combat") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     PlayerTab.BackgroundColor3 = (tab == "Player") and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(40, 40, 60)
     if tab == "Player" then RefreshPlayerList() end
 end
-ESPTab.MouseButton1Click:Connect(function() SwitchTab("ESP") end); FuncTab.MouseButton1Click:Connect(function() SwitchTab("Func") end)
-CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end); PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
+ESPTab.MouseButton1Click:Connect(function() SwitchTab("ESP") end)
+FuncTab.MouseButton1Click:Connect(function() SwitchTab("Func") end)
+FunTab.MouseButton1Click:Connect(function() SwitchTab("Fun") end)
+CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end)
+PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
+
 MinBtn.MouseButton1Click:Connect(function() State.Minimized = true; MainWindow.Visible = false; RestoreBtn.Visible = true end)
 RestoreBtn.MouseButton1Click:Connect(function() State.Minimized = false; MainWindow.Visible = true; RestoreBtn.Visible = false end)
 
@@ -254,7 +285,8 @@ local function StartCircling(target)
         local tr = tc:FindFirstChild("HumanoidRootPart"); if not tr or not root or not root.Parent then StopCircling(); return end
         Components.CircleAngle += Components.CircleSpeed * 0.05; local tp = tr.Position
         root.CFrame = CFrame.new(root.Position:Lerp(Vector3.new(tp.X+r*math.cos(Components.CircleAngle), tp.Y+ho, tp.Z+r*math.sin(Components.CircleAngle)), sm)) end) end
-local function StopCircling() State.Circling = false; Components.CircleTarget = nil; CircleBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60); CircleTargetLabel.Text = "绕圈目标: 无"
+local function StopCircling() State.Circling = false; Components.CircleTarget = nil; CircleBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+    CircleTargetLabel.Text = "目标: 无"
     if Components.CircleConnection then Components.CircleConnection:Disconnect(); Components.CircleConnection = nil end end
 
 local function ToggleInfJump() State.InfJump = not State.InfJump; JumpBtn.BackgroundColor3 = State.InfJump and Color3.fromRGB(30, 80, 40) or Color3.fromRGB(30, 40, 60)
@@ -271,6 +303,65 @@ local function StopAll() if State.Flying then StopFlying() end; if State.Spinnin
 
 local function TeleportToPlayer(tp) if not tp or not root then return false end; local tc = tp.Character; if tc and tc:FindFirstChild("HumanoidRootPart") then root.CFrame = tc.HumanoidRootPart.CFrame + Vector3.new(0,3,0); return true end; return false end
 
+-- ==================== 娱乐功能 ====================
+local function GetTarget() return Components.SelectedCircleTarget end
+
+local function TrollHandsUp(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
+    hum.PlatformStand = true
+    local torso = ch:FindFirstChild("Torso") or ch:FindFirstChild("UpperTorso")
+    if torso and torso:FindFirstChild("Right Shoulder") then
+        torso["Right Shoulder"].CurrentAngle = math.rad(180)
+        torso["Left Shoulder"].CurrentAngle = math.rad(180)
+    end
+end
+
+local function TrollSit(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
+    hum.Sit = true
+end
+
+local function TrollFreeze(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.zero; bv.Parent = hrp
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
+    table.insert(Components.TrollConnections, bv); table.insert(Components.TrollConnections, bg)
+end
+
+local function TrollFling(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.new(0,500,0); bv.Parent = hrp
+    table.insert(Components.TrollConnections, bv)
+end
+
+local function TrollSpin(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
+    task.spawn(function() while bg and bg.Parent do bg.CFrame = bg.CFrame * CFrame.Angles(0, math.rad(10), 0); task.wait() end end)
+    table.insert(Components.TrollConnections, bg)
+end
+
+local function TrollFlip(target)
+    if not target then return end; local ch = target.Character; if not ch then return end
+    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180), 0, 0); bg.Parent = hrp
+    table.insert(Components.TrollConnections, bg)
+end
+
+local function ClearTroll()
+    for _, obj in pairs(Components.TrollConnections) do if obj and obj.Parent then obj:Destroy() end end
+    Components.TrollConnections = {}
+    local target = GetTarget(); if not target then return end
+    local ch = target.Character; if not ch then return end
+    local hum = ch:FindFirstChild("Humanoid"); if hum then hum.PlatformStand = false; hum.Sit = false end
+end
+
+-- ==================== 自瞄 ====================
 local function GetClosestPlayer() local cl, sd = nil, math.huge
     for _, pl in pairs(Players:GetPlayers()) do if pl == LocalPlayer then continue end; local tc = pl.Character; if not tc then continue end; local hd = tc:FindFirstChild("Head"); if not hd then continue end
         if State.AimbotVisible then local _, os = Camera:WorldToViewportPoint(hd.Position); if not os then continue end; local rp = RaycastParams.new(); rp.FilterDescendantsInstances = {char}; rp.FilterType = Enum.RaycastFilterType.Blacklist; local ry = workspace:Raycast(Camera.CFrame.Position, (hd.Position - Camera.CFrame.Position).Unit * 500, rp); if ry then local hc = ry.Instance:FindFirstAncestorOfClass("Model"); if hc ~= pl.Character then continue end end end
@@ -286,9 +377,8 @@ local function ToggleHitbox() State.Hitbox = not State.Hitbox; HitboxToggle.Back
     if State.Hitbox then for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer and pl.Character then Components.HitboxParts[pl] = ExpandHitbox(pl.Character) end end; Components.HitboxConnection = Players.PlayerAdded:Connect(function(pl) pl.CharacterAdded:Connect(function(ch) task.wait(0.5); if State.Hitbox then Components.HitboxParts[pl] = ExpandHitbox(ch) end end) end)
     else for _, pts in pairs(Components.HitboxParts) do RestoreHitbox(pts) end; Components.HitboxParts = {}; if Components.HitboxConnection then Components.HitboxConnection:Disconnect(); Components.HitboxConnection = nil end end end
 
--- ==================== ESP系统(完整版) ====================
+-- ==================== ESP系统 ====================
 local ESPDrawings = {}
-
 local function CreateESP(player)
     local d = {}
     d.Box = Drawing.new("Square"); d.Box.Visible = false; d.Box.Color = Color3.fromRGB(255,255,255); d.Box.Thickness = 1.5; d.Box.Filled = false; d.Box.Transparency = 0.7
@@ -309,54 +399,17 @@ local function UpdateESP()
         if not os then for _, v in pairs(d) do v.Visible = false end; continue end
         local dist = (root.Position - tr.Position).Magnitude; local scale = math.clamp(1/(dist*0.05),0.5,2)
         local bs = Vector2.new(40*scale, 60*scale); local bp = Vector2.new(pos.X-bs.X/2, pos.Y-bs.Y/2)
-        
-        -- 方框
-        if State.ESP and State.ESPBox then
-            d.Box.Visible = true; d.Box.Size = bs; d.Box.Position = bp
-            d.Box.Color = (player.TeamColor and player.TeamColor.Color) or Color3.fromRGB(255,255,255)
-        else d.Box.Visible = false end
-        
-        -- 名字
-        if State.ESP and State.ESPName then
-            d.Name.Visible = true; d.Name.Position = Vector2.new(pos.X, bp.Y-18); d.Name.Text = player.Name
-        else d.Name.Visible = false end
-        
-        -- 血量
-        if State.ESP and State.ESPHealth then
-            local h = th.Health; local mh = th.MaxHealth; local hp = math.clamp(h/mh,0,1)
-            d.HealthBg.Visible = true; d.HealthBg.Size = Vector2.new(3, bs.Y); d.HealthBg.Position = Vector2.new(bp.X-6, bp.Y)
-            d.HealthBar.Visible = true; d.HealthBar.Size = Vector2.new(3, bs.Y*hp); d.HealthBar.Position = Vector2.new(bp.X-6, bp.Y+bs.Y*(1-hp))
-            d.HealthBar.Color = hp>0.6 and Color3.fromRGB(0,255,0) or (hp>0.3 and Color3.fromRGB(255,255,0) or Color3.fromRGB(255,0,0))
-        else d.HealthBg.Visible = false; d.HealthBar.Visible = false end
-        
-        -- 距离
-        if State.ESP and State.ESPDistance then
-            d.Distance.Visible = true; d.Distance.Position = Vector2.new(pos.X, bp.Y+bs.Y+4); d.Distance.Text = math.floor(dist).."m"
-        else d.Distance.Visible = false end
-        
-        -- 射线
-        if State.ESP and State.ESPTracers then
-            d.Tracer.Visible = true; d.Tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
-            d.Tracer.To = Vector2.new(pos.X, bp.Y+bs.Y); d.Tracer.Color = Color3.fromRGB(255,255,255)
-        else d.Tracer.Visible = false end
+        if State.ESP and State.ESPBox then d.Box.Visible = true; d.Box.Size = bs; d.Box.Position = bp; d.Box.Color = (player.TeamColor and player.TeamColor.Color) or Color3.fromRGB(255,255,255) else d.Box.Visible = false end
+        if State.ESP and State.ESPName then d.Name.Visible = true; d.Name.Position = Vector2.new(pos.X, bp.Y-18); d.Name.Text = player.Name else d.Name.Visible = false end
+        if State.ESP and State.ESPHealth then local h = th.Health; local mh = th.MaxHealth; local hp = math.clamp(h/mh,0,1); d.HealthBg.Visible = true; d.HealthBg.Size = Vector2.new(3, bs.Y); d.HealthBg.Position = Vector2.new(bp.X-6, bp.Y); d.HealthBar.Visible = true; d.HealthBar.Size = Vector2.new(3, bs.Y*hp); d.HealthBar.Position = Vector2.new(bp.X-6, bp.Y+bs.Y*(1-hp)); d.HealthBar.Color = hp>0.6 and Color3.fromRGB(0,255,0) or (hp>0.3 and Color3.fromRGB(255,255,0) or Color3.fromRGB(255,0,0)) else d.HealthBg.Visible = false; d.HealthBar.Visible = false end
+        if State.ESP and State.ESPDistance then d.Distance.Visible = true; d.Distance.Position = Vector2.new(pos.X, bp.Y+bs.Y+4); d.Distance.Text = math.floor(dist).."m" else d.Distance.Visible = false end
+        if State.ESP and State.ESPTracers then d.Tracer.Visible = true; d.Tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y); d.Tracer.To = Vector2.new(pos.X, bp.Y+bs.Y); d.Tracer.Color = Color3.fromRGB(255,255,255) else d.Tracer.Visible = false end
     end
 end
 
-local function ToggleESP()
-    State.ESP = not State.ESP
-    ESPToggle.BackgroundColor3 = State.ESP and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60)
-    ESPToggle.Text = State.ESP and "ESP: 开启" or "ESP: 关闭"
-    if State.ESP then
-        for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer then CreateESP(pl) end end
-        local pa = Players.PlayerAdded:Connect(function(pl) if pl ~= LocalPlayer then task.wait(1); CreateESP(pl) end end)
-        table.insert(Components.ESPConnections, pa)
-        local pr = Players.PlayerRemoving:Connect(function(pl) if ESPDrawings[pl] then for _, v in pairs(ESPDrawings[pl]) do v:Remove() end; ESPDrawings[pl] = nil end end)
-        table.insert(Components.ESPConnections, pr)
-    else
-        for _, d in pairs(ESPDrawings) do for _, v in pairs(d) do v:Remove() end end; ESPDrawings = {}
-        for _, c in pairs(Components.ESPConnections) do c:Disconnect() end; Components.ESPConnections = {}
-    end
-end
+local function ToggleESP() State.ESP = not State.ESP; ESPToggle.BackgroundColor3 = State.ESP and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60); ESPToggle.Text = State.ESP and "ESP: 开启" or "ESP: 关闭"
+    if State.ESP then for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer then CreateESP(pl) end end; local pa = Players.PlayerAdded:Connect(function(pl) if pl ~= LocalPlayer then task.wait(1); CreateESP(pl) end end); table.insert(Components.ESPConnections, pa); local pr = Players.PlayerRemoving:Connect(function(pl) if ESPDrawings[pl] then for _, v in pairs(ESPDrawings[pl]) do v:Remove() end; ESPDrawings[pl] = nil end end); table.insert(Components.ESPConnections, pr)
+    else for _, d in pairs(ESPDrawings) do for _, v in pairs(d) do v:Remove() end end; ESPDrawings = {}; for _, c in pairs(Components.ESPConnections) do c:Disconnect() end; Components.ESPConnections = {} end end
 
 local function ToggleESPBox() if not State.ESP then return end; State.ESPBox = not State.ESPBox; ESPBoxBtn.BackgroundColor3 = State.ESPBox and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60); ESPBoxBtn.Text = State.ESPBox and "方框: 开" or "方框: 关" end
 local function ToggleESPName() if not State.ESP then return end; State.ESPName = not State.ESPName; ESPNameBtn.BackgroundColor3 = State.ESPName and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60); ESPNameBtn.Text = State.ESPName and "名字: 开" or "名字: 关" end
@@ -371,31 +424,42 @@ local playerListMode = "teleport"; local playerButtons = {}
 local function RefreshPlayerList()
     for _, b in pairs(playerButtons) do b:Destroy() end; playerButtons = {}
     for _, pl in pairs(Players:GetPlayers()) do if pl ~= LocalPlayer then local n = #playerButtons + 1; local rw = math.floor((n-1)/2); local cl = (n-1)%2
-        local btn = Instance.new("TextButton"); btn.Size = UDim2.new(0, 88, 0, 26); btn.Position = UDim2.new(0, cl*92, 0, rw*30)
+        local btn = Instance.new("TextButton"); btn.Size = UDim2.new(0, 88, 0, 24); btn.Position = UDim2.new(0, cl*92, 0, rw*28)
         btn.BackgroundColor3 = Color3.fromRGB(40, 40, 60); btn.BackgroundTransparency = 0.4; btn.Text = pl.Name; btn.TextColor3 = Color3.fromRGB(200, 220, 255)
-        btn.TextSize = 10; btn.Font = Enum.Font.GothamMedium; btn.BorderSizePixel = 0; btn.Parent = PlayerList
+        btn.TextSize = 9; btn.Font = Enum.Font.GothamMedium; btn.BorderSizePixel = 0; btn.Parent = PlayerList
         Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
         local st = Instance.new("UIStroke"); st.Color = Color3.fromRGB(50, 100, 255); st.Thickness = 1; st.Transparency = 0.5; st.Parent = btn
         btn.MouseButton1Click:Connect(function()
             if playerListMode == "teleport" then if TeleportToPlayer(pl) then btn.BackgroundColor3 = Color3.fromRGB(30,80,40); task.wait(0.3); btn.BackgroundColor3 = Color3.fromRGB(40,40,60) end
-            else Components.SelectedCircleTarget = pl; CircleTargetLabel.Text = "绕圈目标: "..pl.Name; btn.BackgroundColor3 = Color3.fromRGB(80,80,30); task.wait(0.3); btn.BackgroundColor3 = Color3.fromRGB(40,40,60) end end)
+            else Components.SelectedCircleTarget = pl; CircleTargetLabel.Text = "目标: "..pl.Name; btn.BackgroundColor3 = Color3.fromRGB(80,80,30); task.wait(0.3); btn.BackgroundColor3 = Color3.fromRGB(40,40,60) end end)
         table.insert(playerButtons, btn) end end
-    PlayerList.CanvasSize = UDim2.new(0, 0, 0, math.max(math.ceil(#playerButtons/2)*30, 40))
+    PlayerList.CanvasSize = UDim2.new(0, 0, 0, math.max(math.ceil(#playerButtons/2)*28, 40))
 end
 ModeSwitchBtn.MouseButton1Click:Connect(function() playerListMode = (playerListMode == "teleport") and "circle" or "teleport"; PlayerModeLabel.Text = "模式: "..(playerListMode == "teleport" and "传送" or "绕圈"); ModeSwitchBtn.Text = (playerListMode == "teleport") and "切换为绕圈模式" or "切换为传送模式" end)
 
 -- ==================== 按钮绑定 ====================
 FlyBtn.MouseButton1Click:Connect(function() if State.Flying then StopFlying() else StartFlying() end end)
 SpinBtn.MouseButton1Click:Connect(function() if State.Spinning then StopSpinning() else StartSpinning() end end)
-CircleBtn.MouseButton1Click:Connect(function() if State.Circling then StopCircling() elseif Components.SelectedCircleTarget then StartCircling(Components.SelectedCircleTarget); CircleTargetLabel.Text = "绕圈目标: "..Components.SelectedCircleTarget.Name end end)
-JumpBtn.MouseButton1Click:Connect(ToggleInfJump); NoClipBtn.MouseButton1Click:Connect(ToggleNoClip); SpeedBtn.MouseButton1Click:Connect(CycleSpeed); StopBtn.MouseButton1Click:Connect(StopAll)
+JumpBtn.MouseButton1Click:Connect(ToggleInfJump); NoClipBtn.MouseButton1Click:Connect(ToggleNoClip)
+SpeedBtn.MouseButton1Click:Connect(CycleSpeed); StopBtn.MouseButton1Click:Connect(StopAll)
 
-ESPToggle.MouseButton1Click:Connect(ToggleESP)
-ESPBoxBtn.MouseButton1Click:Connect(ToggleESPBox); ESPNameBtn.MouseButton1Click:Connect(ToggleESPName)
-ESPHealthBtn.MouseButton1Click:Connect(ToggleESPHealth); ESPDistBtn.MouseButton1Click:Connect(ToggleESPDist); ESPTraceBtn.MouseButton1Click:Connect(ToggleESPTrace)
+ESPToggle.MouseButton1Click:Connect(ToggleESP); ESPBoxBtn.MouseButton1Click:Connect(ToggleESPBox)
+ESPNameBtn.MouseButton1Click:Connect(ToggleESPName); ESPHealthBtn.MouseButton1Click:Connect(ToggleESPHealth)
+ESPDistBtn.MouseButton1Click:Connect(ToggleESPDist); ESPTraceBtn.MouseButton1Click:Connect(ToggleESPTrace)
 
-AimbotToggle.MouseButton1Click:Connect(ToggleAimbot); AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60) end)
-HitboxToggle.MouseButton1Click:Connect(ToggleHitbox); HitboxUpBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.min(State.HitboxSize+1, 20); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
+CircleBtn.MouseButton1Click:Connect(function() if State.Circling then StopCircling() elseif Components.SelectedCircleTarget then StartCircling(Components.SelectedCircleTarget); CircleTargetLabel.Text = "目标: "..Components.SelectedCircleTarget.Name end end)
+HandsUpBtn.MouseButton1Click:Connect(function() TrollHandsUp(GetTarget()) end)
+SitBtn.MouseButton1Click:Connect(function() TrollSit(GetTarget()) end)
+FreezeBtn.MouseButton1Click:Connect(function() TrollFreeze(GetTarget()) end)
+FlingBtn.MouseButton1Click:Connect(function() TrollFling(GetTarget()) end)
+SpinTargetBtn.MouseButton1Click:Connect(function() TrollSpin(GetTarget()) end)
+FlipBtn.MouseButton1Click:Connect(function() TrollFlip(GetTarget()) end)
+UnTrollBtn.MouseButton1Click:Connect(ClearTroll)
+
+AimbotToggle.MouseButton1Click:Connect(ToggleAimbot)
+AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60) end)
+HitboxToggle.MouseButton1Click:Connect(ToggleHitbox)
+HitboxUpBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.min(State.HitboxSize+1, 20); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 HitboxDownBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.max(State.HitboxSize-1, 2); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 
 -- ==================== 窗口拖动 ====================
@@ -405,6 +469,6 @@ local function MakeDraggable(frame, handle) local dragging, ds, sp = false
     UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = false end end) end
 MakeDraggable(MainWindow, TitleBar); MakeDraggable(RestoreBtn, RestoreBtn)
 
-CloseBtn.MouseButton1Click:Connect(function() StopAll(); State.ESP = false; for _, d in pairs(ESPDrawings) do for _, v in pairs(d) do v:Remove() end end; ESPDrawings = {}; ScreenGui:Destroy() end)
+CloseBtn.MouseButton1Click:Connect(function() StopAll(); ClearTroll(); State.ESP = false; for _, d in pairs(ESPDrawings) do for _, v in pairs(d) do v:Remove() end end; ESPDrawings = {}; ScreenGui:Destroy() end)
 RefreshPlayerList(); Players.PlayerAdded:Connect(RefreshPlayerList); Players.PlayerRemoving:Connect(RefreshPlayerList)
-print("秋雨脚本 加载完成! ESP:总开关+5按钮+方框修复")
+print("秋雨脚本 娱乐版 加载完成!")
