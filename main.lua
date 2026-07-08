@@ -1,5 +1,5 @@
 -- ============================================
--- 秋雨脚本 - 娱乐修复版
+-- 秋雨脚本 v3.0 - 完整版 + 彩蛋
 -- ============================================
 
 local Players = game:GetService("Players")
@@ -103,13 +103,13 @@ LocalPlayer.CharacterAdded:Connect(function()
     if State.NoClip then for _, p in pairs(char:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide = false end end end
 end)
 
--- ==================== UI创建 ====================
+-- ==================== UI创建 - 居中固定 ====================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "QiuYuScript"; ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui"); ScreenGui.ResetOnSpawn = false
 
 local MainWindow = Instance.new("Frame")
-MainWindow.Size = UDim2.new(0, 700, 0, 320)
-MainWindow.Position = UDim2.new(0.5, -350, 0.5, -160)
+MainWindow.Size = UDim2.new(0, 700, 0, 340)
+MainWindow.Position = UDim2.new(0.5, -350, 0.5, -170)
 MainWindow.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 MainWindow.BackgroundTransparency = 0.3
 MainWindow.BorderSizePixel = 0
@@ -124,8 +124,9 @@ Instance.new("UICorner", uiBgImage).CornerRadius = UDim.new(0, 12)
 
 local ms = Instance.new("UIStroke"); ms.Color = Color3.fromRGB(50, 100, 255); ms.Thickness = 1.5; ms.Transparency = 0.3; ms.Parent = MainWindow
 
+-- 入场动画
 MainWindow.BackgroundTransparency = 1; MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0); uiBgImage.ImageTransparency = 1
-TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160), BackgroundTransparency = 0.3}):Play()
+TweenService:Create(MainWindow, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 340), Position = UDim2.new(0.5, -350, 0.5, -170), BackgroundTransparency = 0.3}):Play()
 TweenService:Create(uiBgImage, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15}):Play()
 
 local TitleBar = Instance.new("Frame")
@@ -202,8 +203,10 @@ local FlingBtn     = CreateButton(FunContent, 464, 2,  110, 26, "弹飞", false)
 local SpinTargetBtn= CreateButton(FunContent, 580, 2,  104, 26, "转圈", false)
 local FlipBtn      = CreateButton(FunContent, 0,   32, 110, 26, "倒立", false)
 local UnTrollBtn   = CreateButton(FunContent, 116, 32, 110, 26, "恢复", false)
+-- 彩蛋按钮
+local EasterBtn    = CreateButton(FunContent, 232, 32, 110, 26, "🎉彩蛋", false)
 local CircleTargetLabel = Instance.new("TextLabel")
-CircleTargetLabel.Size = UDim2.new(0, 400, 0, 16); CircleTargetLabel.Position = UDim2.new(0, 240, 0, 36)
+CircleTargetLabel.Size = UDim2.new(0, 400, 0, 16); CircleTargetLabel.Position = UDim2.new(0, 350, 0, 36)
 CircleTargetLabel.BackgroundTransparency = 1; CircleTargetLabel.Text = "目标: 无 (在玩家列表选择)"
 CircleTargetLabel.TextColor3 = Color3.fromRGB(150, 180, 220); CircleTargetLabel.TextSize = 10
 CircleTargetLabel.Font = Enum.Font.GothamMedium; CircleTargetLabel.Parent = FunContent
@@ -256,7 +259,7 @@ FunTab.MouseButton1Click:Connect(function() SwitchTab("Fun") end)
 CombatTab.MouseButton1Click:Connect(function() SwitchTab("Combat") end)
 PlayerTab.MouseButton1Click:Connect(function() SwitchTab("Player") end)
 
--- ==================== 最小化 ====================
+-- ==================== 最小化/恢复 ====================
 MinBtn.MouseButton1Click:Connect(function()
     State.Minimized = true
     TweenService:Create(MainWindow, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
@@ -267,7 +270,7 @@ end)
 RestoreBtn.MouseButton1Click:Connect(function()
     State.Minimized = false; RestoreBtn.Visible = false; MainWindow.Visible = true
     MainWindow.Size = UDim2.new(0, 0, 0, 0); MainWindow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    TweenService:Create(MainWindow, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 320), Position = UDim2.new(0.5, -350, 0.5, -160)}):Play()
+    TweenService:Create(MainWindow, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 700, 0, 340), Position = UDim2.new(0.5, -350, 0.5, -170)}):Play()
     TweenService:Create(uiBgImage, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ImageTransparency = 0.15}):Play()
 end)
 
@@ -341,81 +344,15 @@ local function StopAll() if State.Flying then StopFlying() end; if State.Spinnin
 
 local function TeleportToPlayer(tp) if not tp or not root then return false end; local tc = tp.Character; if tc and tc:FindFirstChild("HumanoidRootPart") then root.CFrame = tc.HumanoidRootPart.CFrame + Vector3.new(0,3,0); return true end; return false end
 
--- ==================== 娱乐功能(修复版) ====================
+-- 娱乐
 local function GetTarget() return Components.SelectedCircleTarget end
-
-local function TrollHandsUp(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
-    hum.PlatformStand = true
-    task.wait(0.1)
-    local torso = ch:FindFirstChild("Torso") or ch:FindFirstChild("UpperTorso")
-    if torso then
-        local rs = torso:FindFirstChild("Right Shoulder") or torso:FindFirstChild("RightUpperArm")
-        local ls = torso:FindFirstChild("Left Shoulder") or torso:FindFirstChild("LeftUpperArm")
-        if rs then rs.CurrentAngle = math.rad(180) end
-        if ls then ls.CurrentAngle = math.rad(180) end
-    end
-end
-
-local function TrollSit(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hum = ch:FindFirstChild("Humanoid"); if not hum then return end
-    hum.Sit = true
-end
-
-local function TrollFreeze(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
-    ClearTrollKeepTarget()
-    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.zero; bv.Parent = hrp
-    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
-    table.insert(Components.TrollConnections, bv); table.insert(Components.TrollConnections, bg)
-end
-
-local function TrollFling(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
-    local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999
-    bv.Velocity = Vector3.new(math.random(-300,300), 800, math.random(-300,300)); bv.Parent = hrp
-    table.insert(Components.TrollConnections, bv)
-    task.wait(1); if bv and bv.Parent then bv:Destroy() end
-end
-
-local function TrollSpin(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
-    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp
-    table.insert(Components.TrollConnections, bg)
-    task.spawn(function() while bg and bg.Parent do bg.CFrame = bg.CFrame * CFrame.Angles(0, math.rad(20), 0); task.wait() end end)
-end
-
-local function TrollFlip(target)
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
-    local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999
-    bg.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180), 0, 0); bg.Parent = hrp
-    table.insert(Components.TrollConnections, bg)
-end
-
-local function ClearTrollKeepTarget()
-    for _, obj in pairs(Components.TrollConnections) do if obj and obj.Parent then obj:Destroy() end end
-    Components.TrollConnections = {}
-end
-
-local function ClearTroll()
-    ClearTrollKeepTarget()
-    local target = GetTarget()
-    if not target then return end
-    local ch = target.Character; if not ch then return end
-    local hum = ch:FindFirstChild("Humanoid"); if hum then hum.PlatformStand = false; hum.Sit = false end
-end
+local function TrollHandsUp(target) if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if not hum then return end; hum.PlatformStand = true; task.wait(0.1); local torso = ch:FindFirstChild("Torso") or ch:FindFirstChild("UpperTorso"); if torso then local rs = torso:FindFirstChild("Right Shoulder") or torso:FindFirstChild("RightUpperArm"); local ls = torso:FindFirstChild("Left Shoulder") or torso:FindFirstChild("LeftUpperArm"); if rs then rs.CurrentAngle = math.rad(180) end; if ls then ls.CurrentAngle = math.rad(180) end end end
+local function TrollSit(target) if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if not hum then return end; hum.Sit = true end
+local function TrollFreeze(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; for _, o in pairs(Components.TrollConnections) do if o and o.Parent then o:Destroy() end end; Components.TrollConnections = {}; local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.zero; bv.Parent = hrp; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp; table.insert(Components.TrollConnections, bv); table.insert(Components.TrollConnections, bg) end
+local function TrollFling(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bv = Instance.new("BodyVelocity"); bv.MaxForce = Vector3.new(1,1,1)*999999; bv.Velocity = Vector3.new(math.random(-300,300), 800, math.random(-300,300)); bv.Parent = hrp; table.insert(Components.TrollConnections, bv); task.wait(1); if bv and bv.Parent then bv:Destroy() end end
+local function TrollSpin(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame; bg.Parent = hrp; table.insert(Components.TrollConnections, bg); task.spawn(function() while bg and bg.Parent do bg.CFrame = bg.CFrame * CFrame.Angles(0, math.rad(20), 0); task.wait() end end) end
+local function TrollFlip(target) if not target then return end; local ch = target.Character; if not ch then return end; local hrp = ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end; local bg = Instance.new("BodyGyro"); bg.MaxTorque = Vector3.new(1,1,1)*999999; bg.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180), 0, 0); bg.Parent = hrp; table.insert(Components.TrollConnections, bg) end
+local function ClearTroll() for _, o in pairs(Components.TrollConnections) do if o and o.Parent then o:Destroy() end end; Components.TrollConnections = {}; local target = GetTarget(); if not target then return end; local ch = target.Character; if not ch then return end; local hum = ch:FindFirstChild("Humanoid"); if hum then hum.PlatformStand = false; hum.Sit = false end end
 
 -- 自瞄/范围
 local function GetClosestPlayer() local cl, sd = nil, math.huge
@@ -471,6 +408,57 @@ QQBtn.MouseButton1Click:Connect(function()
     task.wait(1.5); QQBtn.Text = "QQ群: 1051933529"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
 end)
 
+-- 彩蛋按钮
+EasterBtn.MouseButton1Click:Connect(function()
+    EasterBtn.Text = "🎉 彩蛋开启!"; EasterBtn.BackgroundColor3 = Color3.fromRGB(80, 30, 80)
+    -- 创建一个彩蛋弹窗
+    local easterFrame = Instance.new("Frame")
+    easterFrame.Size = UDim2.new(0, 350, 0, 180)
+    easterFrame.Position = UDim2.new(0.5, -175, 0.5, -90)
+    easterFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
+    easterFrame.BackgroundTransparency = 0.1
+    easterFrame.BorderSizePixel = 0
+    easterFrame.Parent = ScreenGui
+    Instance.new("UICorner", easterFrame).CornerRadius = UDim.new(0, 16)
+    local es = Instance.new("UIStroke"); es.Color = Color3.fromRGB(200, 150, 255); es.Thickness = 2; es.Parent = easterFrame
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30); title.Position = UDim2.new(0, 0, 0, 15)
+    title.BackgroundTransparency = 1; title.Text = "🌟 彩蛋 - 秋雨脚本 🌟"
+    title.TextColor3 = Color3.fromRGB(255, 200, 100); title.TextSize = 16; title.Font = Enum.Font.GothamBold
+    title.Parent = easterFrame
+    
+    local line1 = Instance.new("TextLabel")
+    line1.Size = UDim2.new(1, 0, 0, 22); line1.Position = UDim2.new(0, 0, 0, 55)
+    line1.BackgroundTransparency = 1; line1.Text = "第一个使用者：爱吃奥利奥"
+    line1.TextColor3 = Color3.fromRGB(200, 200, 255); line1.TextSize = 14; line1.Font = Enum.Font.GothamMedium
+    line1.Parent = easterFrame
+    
+    local line2 = Instance.new("TextLabel")
+    line2.Size = UDim2.new(1, 0, 0, 22); line2.Position = UDim2.new(0, 0, 0, 80)
+    line2.BackgroundTransparency = 1; line2.Text = "第一个传播者：兔大侠"
+    line2.TextColor3 = Color3.fromRGB(255, 180, 180); line2.TextSize = 14; line2.Font = Enum.Font.GothamMedium
+    line2.Parent = easterFrame
+    
+    local line3 = Instance.new("TextLabel")
+    line3.Size = UDim2.new(1, 0, 0, 22); line3.Position = UDim2.new(0, 0, 0, 110)
+    line3.BackgroundTransparency = 1; line3.Text = "❤️ 感谢你们的支持！❤️"
+    line3.TextColor3 = Color3.fromRGB(255, 255, 255); line3.TextSize = 14; line3.Font = Enum.Font.GothamBold
+    line3.Parent = easterFrame
+    
+    local closeEgg = Instance.new("TextButton")
+    closeEgg.Size = UDim2.new(0, 80, 0, 28); closeEgg.Position = UDim2.new(0.5, -40, 0, 140)
+    closeEgg.BackgroundColor3 = Color3.fromRGB(150, 80, 200); closeEgg.Text = "关闭"; closeEgg.TextColor3 = Color3.fromRGB(255,255,255)
+    closeEgg.TextSize = 12; closeEgg.Font = Enum.Font.GothamBold; closeEgg.BorderSizePixel = 0
+    closeEgg.Parent = easterFrame
+    Instance.new("UICorner", closeEgg).CornerRadius = UDim.new(0, 8)
+    
+    closeEgg.MouseButton1Click:Connect(function() easterFrame:Destroy() end)
+    
+    task.wait(3)
+    EasterBtn.Text = "🎉彩蛋"; EasterBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
+end)
+
 -- 玩家列表
 local playerListMode = "teleport"; local playerButtons = {}
 local function RefreshPlayerList()
@@ -499,18 +487,16 @@ ESPToggle.MouseButton1Click:Connect(ToggleESP); ESPBoxBtn.MouseButton1Click:Conn
 ESPHealthBtn.MouseButton1Click:Connect(ToggleESPHealth); ESPDistBtn.MouseButton1Click:Connect(ToggleESPDist); ESPTraceBtn.MouseButton1Click:Connect(ToggleESPTrace)
 
 CircleBtn.MouseButton1Click:Connect(function() if State.Circling then StopCircling() elseif Components.SelectedCircleTarget then StartCircling(Components.SelectedCircleTarget); CircleTargetLabel.Text = "目标: "..Components.SelectedCircleTarget.Name end end)
-HandsUpBtn.MouseButton1Click:Connect(function() TrollHandsUp(GetTarget()) end)
-SitBtn.MouseButton1Click:Connect(function() TrollSit(GetTarget()) end)
-FreezeBtn.MouseButton1Click:Connect(function() TrollFreeze(GetTarget()) end)
-FlingBtn.MouseButton1Click:Connect(function() TrollFling(GetTarget()) end)
-SpinTargetBtn.MouseButton1Click:Connect(function() TrollSpin(GetTarget()) end)
-FlipBtn.MouseButton1Click:Connect(function() TrollFlip(GetTarget()) end)
+HandsUpBtn.MouseButton1Click:Connect(function() TrollHandsUp(GetTarget()) end); SitBtn.MouseButton1Click:Connect(function() TrollSit(GetTarget()) end)
+FreezeBtn.MouseButton1Click:Connect(function() TrollFreeze(GetTarget()) end); FlingBtn.MouseButton1Click:Connect(function() TrollFling(GetTarget()) end)
+SpinTargetBtn.MouseButton1Click:Connect(function() TrollSpin(GetTarget()) end); FlipBtn.MouseButton1Click:Connect(function() TrollFlip(GetTarget()) end)
 UnTrollBtn.MouseButton1Click:Connect(ClearTroll)
 
 AimbotToggle.MouseButton1Click:Connect(ToggleAimbot); AimbotVisBtn.MouseButton1Click:Connect(function() State.AimbotVisible = not State.AimbotVisible; AimbotVisBtn.BackgroundColor3 = State.AimbotVisible and Color3.fromRGB(30,80,40) or Color3.fromRGB(30,40,60) end)
 HitboxToggle.MouseButton1Click:Connect(ToggleHitbox); HitboxUpBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.min(State.HitboxSize+1, 20); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 HitboxDownBtn.MouseButton1Click:Connect(function() State.HitboxSize = math.max(State.HitboxSize-1, 2); HitboxSizeLabel.Text = "范围大小: "..State.HitboxSize; if State.Hitbox then ToggleHitbox(); ToggleHitbox() end end)
 
+-- ==================== 窗口拖动 ====================
 local function MakeDraggable(frame, handle) local dragging, ds, sp = false
     handle.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = true; ds = i.Position; sp = frame.Position end end)
     UserInputService.InputChanged:Connect(function(i) if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then local d = i.Position - ds; frame.Position = UDim2.new(sp.X.Scale, sp.X.Offset+d.X, sp.Y.Scale, sp.Y.Offset+d.Y) end end)
@@ -519,4 +505,4 @@ MakeDraggable(MainWindow, TitleBar); MakeDraggable(RestoreBtn, RestoreBtn)
 
 CloseBtn.MouseButton1Click:Connect(CloseWithAnim)
 RefreshPlayerList(); Players.PlayerAdded:Connect(RefreshPlayerList); Players.PlayerRemoving:Connect(RefreshPlayerList)
-print("秋雨脚本 娱乐修复版 加载完成!")
+print("秋雨脚本 彩蛋版 加载完成!")
