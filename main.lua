@@ -153,7 +153,7 @@ local function CreateTab(name, pos)
     tab.TextSize = 10; tab.Font = Enum.Font.GothamBold; tab.BorderSizePixel = 0; tab.Parent = TabContainer
     Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 6); return tab
 end
-local ESPTab    = CreateTab("ESP", 2)
+local ESPTab    = CreateTab("ESP（透视）", 2)
 local FuncTab   = CreateTab("功能", 54)
 local FunTab    = CreateTab("娱乐", 106)
 local CombatTab = CreateTab("战斗", 158)
@@ -210,7 +210,7 @@ CircleTargetLabel.Font = Enum.Font.GothamMedium; CircleTargetLabel.Parent = FunC
 
 -- ==================== 战斗标签页 ====================
 local AimbotToggle = CreateButton(CombatContent, 0,   2,  170, 26, "自瞄", false)
-local AimbotVisBtn = CreateButton(CombatContent, 176, 2,  170, 26, "可视检查", false)
+local AimbotVisBtn = CreateButton(CombatContent, 176, 2,  170, 26, "检测障碍物（建议开）", false)
 local HitboxToggle = CreateButton(CombatContent, 352, 2,  170, 26, "范围伤害", false)
 local HitboxDownBtn= CreateButton(CombatContent, 528, 2,  70,  26, "-", false)
 local HitboxUpBtn  = CreateButton(CombatContent, 602, 2,  82,  26, "+", false)
@@ -467,7 +467,7 @@ RunService.RenderStepped:Connect(function() if State.ESP then UpdateESP() end en
 -- QQ群
 QQBtn.MouseButton1Click:Connect(function()
     if setclipboard then setclipboard("1051933529") end
-    QQBtn.Text = "✅ 已复制!"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
+    QQBtn.Text = "已复制!"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 40)
     task.wait(1.5); QQBtn.Text = "QQ群: 1051933529"; QQBtn.BackgroundColor3 = Color3.fromRGB(30, 40, 60)
 end)
 
